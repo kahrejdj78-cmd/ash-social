@@ -1,59 +1,28 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Send } from 'lucide-react';
-import { database } from '../firebase';
-import { ref, push, set, get, child } from 'firebase/database';
 import '../styles/MessagesPage.css';
 
 export default function MessagesPage() {
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState([
+    { id: 1, sender: 'أحمد', content: 'مرحباً!', time: '10:30' },
+    { id: 2, sender: 'أنت', content: 'مرحباً بك!', time: '10:31' },
+  ]);
   const [newMessage, setNewMessage] = useState('');
-  const [loading, setLoading] = useState(false);
-  const userId = localStorage.getItem('userId');
 
-  useEffect(() => {
-    fetchMessages();
-  }, []);
-
-  const fetchMessages = async () => {
-    try {
-      const messagesRef = ref(database, 'messages');
-      const snapshot = await get(messagesRef);
-      if (snapshot.exists()) {
-        const messagesData = [];
-        snapshot.forEach((child) => {
-          const msg = child.val();
-          if (msg.senderId === userId || msg.recipientId === userId) {
-            messagesData.push({ id: child.key, ...msg });
-          }
-        });
-        setMessages(messagesData.reverse());
-      }
-    } catch (error) {
-      console.error('Failed to fetch messages:', error);
-    }
-  };
-
-  const handleSendMessage = async (e) => {
+  const handleSendMessage = (e) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
 
-    setLoading(true);
-    try {
-      const newMessageRef = push(ref(database, 'messages'));
-      await set(newMessageRef, {
-        senderId: userId,
-        recipientId: '1',
+    setMessages([
+      ...messages,
+      {
+        id: messages.length + 1,
+        sender: 'أنت',
         content: newMessage,
-        createdAt: new Date().toISOString(),
-      });
-
-      setNewMessage('');
-      fetchMessages();
-    } catch (error) {
-      console.error('Failed to send message:', error);
-    } finally {
-      setLoading(false);
-    }
+        time: new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' }),
+      },
+    ]);
+    setNewMessage('');
   };
 
   return (
@@ -61,9 +30,9 @@ export default function MessagesPage() {
       <div className="messages-container">
         <div className="messages-list">
           {messages.map((msg) => (
-            <div key={msg.id} className="message-item">
+            <div key={msg.id} className={`message-item ${msg.sender === 'أنت' ? 'sent' : 'received'}`}>
               <p>{msg.content}</p>
-              <small>{new Date(msg.createdAt).toLocaleTimeString('ar-SA')}</small>
+              <small>{msg.time}</small>
             </div>
           ))}
         </div>
@@ -75,7 +44,7 @@ export default function MessagesPage() {
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
           />
-          <button type="submit" disabled={loading}>
+          <button type="submit" disabled={!newMessage.trim()}>
             <Send size={20} />
           </button>
         </form>
