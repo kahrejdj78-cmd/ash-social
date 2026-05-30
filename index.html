@@ -3,102 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ASH SOCIAL</title>
+    <title>ASH SOCIAL - تطبيق التواصل الاجتماعي</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
-        .container { max-width: 500px; margin: 50px auto; background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
-        h1 { color: #667eea; text-align: center; margin-bottom: 30px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; color: #333; }
+        .auth-container { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+        .auth-box { background: white; border-radius: 20px; padding: 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); width: 100%; max-width: 450px; }
+        .logo { text-align: center; margin-bottom: 30px; }
+        .logo h1 { color: #667eea; font-size: 36px; font-weight: 700; margin-bottom: 10px; }
+        .logo p { color: #999; font-size: 14px; }
         .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-weight: bold; color: #333; }
-        input { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; }
-        input:focus { outline: none; border-color: #667eea; }
-        button { width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        button:hover { opacity: 0.9; }
-        .error { color: red; font-size: 12px; margin-top: 5px; }
-        .toggle { text-align: center; margin-top: 15px; }
-        .toggle a { color: #667eea; cursor: pointer; text-decoration: none; font-weight: bold; }
+        label { display: block; margin-bottom: 8px; color: #333; font-weight: 600; font-size: 14px; }
+        input { width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 14px; font-family: inherit; transition: all 0.3s ease; }
+        input:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.1); }
+        .error-msg { color: #e74c3c; font-size: 12px; margin-top: 5px; display: none; }
+        .error-msg.show { display: block; }
+        button { width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 14px; transition: all 0.3s ease; }
+        button:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(102,126,234,0.3); }
+        button:active { transform: translateY(0); }
+        .toggle-form { text-align: center; margin-top: 20px; color: #666; font-size: 14px; }
+        .toggle-form a { color: #667eea; cursor: pointer; font-weight: 600; text-decoration: none; }
+        .toggle-form a:hover { text-decoration: underline; }
         .hidden { display: none !important; }
         .dashboard { display: flex; flex-direction: column; height: 100vh; background: #f5f5f5; }
-        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
-        .main { flex: 1; overflow-y: auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .header h1 { font-size: 24px; }
+        .logout-btn { background: rgba(255,255,255,0.2); border: none; color: white; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: 600; transition: all 0.3s ease; }
+        .logout-btn:hover { background: rgba(255,255,255,0.3); }
+        .main-content { flex: 1; overflow-y: auto; padding: 20px; }
         .page { display: none; }
-        .page.active { display: block; }
-        .post { background: white; padding: 15px; margin-bottom: 15px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .post-header { display: flex; justify-content: space-between; margin-bottom: 10px; font-weight: bold; }
+        .page.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .new-post-box { background: white; padding: 20px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .new-post-box textarea { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; font-family: inherit; resize: vertical; min-height: 80px; }
+        .new-post-box textarea:focus { outline: none; border-color: #667eea; }
+        .new-post-box button { margin-top: 10px; }
+        .post { background: white; padding: 20px; margin-bottom: 15px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid #f0f0f0; padding-bottom: 12px; }
+        .post-author { font-weight: 700; color: #333; }
         .post-time { color: #999; font-size: 12px; }
-        .post-content { margin-bottom: 10px; line-height: 1.5; }
-        .post-image { width: 100%; border-radius: 8px; margin-bottom: 10px; max-height: 300px; object-fit: cover; }
-        .post-actions { display: flex; gap: 10px; margin-top: 10px; }
-        .post-btn { flex: 1; padding: 8px; background: #f0f0f0; border: none; border-radius: 5px; cursor: pointer; }
-        .bottom-nav { background: white; border-top: 1px solid #ddd; display: flex; justify-content: space-around; padding: 10px 0; }
-        .nav-btn { background: none; border: none; cursor: pointer; color: #999; padding: 10px; font-size: 12px; }
-        .nav-btn.active { color: #667eea; font-weight: bold; }
-        .new-post { background: white; padding: 15px; margin-bottom: 15px; border-radius: 10px; }
-        .new-post textarea { width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 5px; resize: vertical; min-height: 80px; }
-        .profile-card { background: white; padding: 20px; border-radius: 10px; text-align: center; margin-bottom: 20px; }
-        .profile-avatar { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-size: 40px; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; }
-        .profile-name { font-size: 20px; font-weight: bold; margin-bottom: 5px; }
-        .profile-email { color: #999; margin-bottom: 15px; }
-        .profile-stats { display: flex; justify-content: space-around; margin-top: 15px; padding-top: 15px; border-top: 1px solid #ddd; }
+        .post-content { margin: 12px 0; line-height: 1.6; color: #555; }
+        .post-actions { display: flex; gap: 10px; margin-top: 12px; }
+        .action-btn { flex: 1; padding: 8px; background: #f5f5f5; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; color: #666; transition: all 0.3s ease; }
+        .action-btn:hover { background: #e8e8e8; }
+        .bottom-nav { background: white; border-top: 1px solid #e0e0e0; display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
+        .nav-btn { background: none; border: none; cursor: pointer; color: #999; padding: 12px 10px; font-size: 12px; transition: all 0.3s ease; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        .nav-btn.active { color: #667eea; font-weight: 600; }
+        .nav-btn i { font-size: 18px; }
+        .profile-card { background: white; padding: 30px; border-radius: 15px; text-align: center; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .profile-avatar { width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-size: 50px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+        .profile-name { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+        .profile-email { color: #999; margin-bottom: 20px; }
+        .profile-stats { display: flex; justify-content: space-around; margin-top: 20px; padding-top: 20px; border-top: 1px solid #f0f0f0; }
         .stat { text-align: center; }
-        .stat-number { font-size: 18px; font-weight: bold; color: #667eea; }
-        .stat-label { font-size: 12px; color: #999; }
+        .stat-number { font-size: 20px; font-weight: 700; color: #667eea; }
+        .stat-label { font-size: 12px; color: #999; margin-top: 5px; }
+        .empty-state { text-align: center; padding: 40px 20px; color: #999; }
+        .empty-state i { font-size: 48px; margin-bottom: 15px; opacity: 0.3; }
         .spinner { border: 3px solid #f3f3f3; border-top: 3px solid #667eea; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 10px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .success-msg { background: #d4edda; color: #155724; padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #c3e6cb; }
     </style>
 </head>
 <body>
     <!-- Auth Container -->
-    <div id="authContainer">
+    <div id="authContainer" class="auth-container">
         <!-- Login Form -->
-        <div id="loginForm">
-            <div class="container">
+        <div id="loginForm" class="auth-box">
+            <div class="logo">
                 <h1><i class="fas fa-fire"></i> ASH SOCIAL</h1>
+                <p>تطبيق التواصل الاجتماعي</p>
+            </div>
+            <form onsubmit="handleLogin(event)">
                 <div class="form-group">
-                    <label>البريد الإلكتروني</label>
-                    <input type="email" id="loginEmail" placeholder="your@email.com">
-                    <div id="loginEmailError" class="error"></div>
+                    <label for="loginEmail">البريد الإلكتروني</label>
+                    <input type="email" id="loginEmail" placeholder="your@email.com" required>
+                    <div id="loginEmailError" class="error-msg"></div>
                 </div>
                 <div class="form-group">
-                    <label>كلمة المرور</label>
-                    <input type="password" id="loginPassword" placeholder="••••••••">
-                    <div id="loginPasswordError" class="error"></div>
+                    <label for="loginPassword">كلمة المرور</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" required>
+                    <div id="loginPasswordError" class="error-msg"></div>
                 </div>
-                <button onclick="handleLogin()">دخول</button>
-                <div id="loginLoading" class="spinner hidden"></div>
-                <div class="toggle">ليس لديك حساب؟ <a onclick="toggleForms()">إنشاء حساب</a></div>
+                <button type="submit">دخول</button>
+            </form>
+            <div class="toggle-form">
+                ليس لديك حساب؟ <a onclick="switchToRegister()">إنشاء حساب جديد</a>
             </div>
         </div>
 
         <!-- Register Form -->
-        <div id="registerForm" class="hidden">
-            <div class="container">
+        <div id="registerForm" class="auth-box hidden">
+            <div class="logo">
                 <h1><i class="fas fa-fire"></i> ASH SOCIAL</h1>
+                <p>انضم إلى مجتمعنا</p>
+            </div>
+            <form onsubmit="handleRegister(event)">
                 <div class="form-group">
-                    <label>الاسم الكامل</label>
-                    <input type="text" id="fullName" placeholder="أحمد محمد">
-                    <div id="fullNameError" class="error"></div>
+                    <label for="fullName">الاسم الكامل</label>
+                    <input type="text" id="fullName" placeholder="أحمد محمد" required>
+                    <div id="fullNameError" class="error-msg"></div>
                 </div>
                 <div class="form-group">
-                    <label>البريد الإلكتروني</label>
-                    <input type="email" id="registerEmail" placeholder="your@email.com">
-                    <div id="registerEmailError" class="error"></div>
+                    <label for="registerEmail">البريد الإلكتروني</label>
+                    <input type="email" id="registerEmail" placeholder="your@email.com" required>
+                    <div id="registerEmailError" class="error-msg"></div>
                 </div>
                 <div class="form-group">
-                    <label>كلمة المرور</label>
-                    <input type="password" id="registerPassword" placeholder="••••••••">
-                    <div id="registerPasswordError" class="error"></div>
+                    <label for="registerPassword">كلمة المرور</label>
+                    <input type="password" id="registerPassword" placeholder="••••••••" required>
+                    <div id="registerPasswordError" class="error-msg"></div>
                 </div>
                 <div class="form-group">
-                    <label>تأكيد كلمة المرور</label>
-                    <input type="password" id="confirmPassword" placeholder="••••••••">
-                    <div id="confirmPasswordError" class="error"></div>
+                    <label for="confirmPassword">تأكيد كلمة المرور</label>
+                    <input type="password" id="confirmPassword" placeholder="••••••••" required>
+                    <div id="confirmPasswordError" class="error-msg"></div>
                 </div>
-                <button onclick="handleRegister()">إنشاء حساب</button>
-                <div id="registerLoading" class="spinner hidden"></div>
-                <div class="toggle">هل لديك حساب؟ <a onclick="toggleForms()">دخول</a></div>
+                <button type="submit">إنشاء حساب</button>
+            </form>
+            <div class="toggle-form">
+                هل لديك حساب؟ <a onclick="switchToLogin()">دخول</a>
             </div>
         </div>
     </div>
@@ -107,42 +132,42 @@
     <div id="dashboard" class="dashboard hidden">
         <div class="header">
             <h1><i class="fas fa-fire"></i> ASH SOCIAL</h1>
-            <button onclick="handleLogout()" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 8px 15px; border-radius: 5px; cursor: pointer;">خروج</button>
+            <button class="logout-btn" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> خروج</button>
         </div>
 
-        <div class="main">
+        <div class="main-content">
             <!-- Home Page -->
             <div id="homePage" class="page active">
-                <div class="new-post">
+                <div class="new-post-box">
                     <textarea id="postContent" placeholder="ما الذي يفكر فيه؟"></textarea>
-                    <button onclick="createPost()" style="width: 100%; margin-top: 10px;"><i class="fas fa-paper-plane"></i> نشر</button>
+                    <button onclick="createPost()"><i class="fas fa-paper-plane"></i> نشر</button>
                 </div>
                 <div id="postsContainer"></div>
             </div>
 
             <!-- Videos Page -->
             <div id="videosPage" class="page">
-                <div class="new-post">
-                    <textarea id="videoContent" placeholder="شارك فيديو..."></textarea>
-                    <button onclick="createVideo()" style="width: 100%; margin-top: 10px;"><i class="fas fa-video"></i> نشر فيديو</button>
+                <div class="new-post-box">
+                    <textarea id="videoContent" placeholder="شارك فيديو جديد..."></textarea>
+                    <button onclick="createVideo()"><i class="fas fa-video"></i> نشر فيديو</button>
                 </div>
                 <div id="videosContainer"></div>
             </div>
 
             <!-- Reels Page -->
             <div id="reelsPage" class="page">
-                <div class="new-post">
+                <div class="new-post-box">
                     <textarea id="reelContent" placeholder="إنشاء ريل جديد..."></textarea>
-                    <button onclick="createReel()" style="width: 100%; margin-top: 10px;"><i class="fas fa-film"></i> نشر ريل</button>
+                    <button onclick="createReel()"><i class="fas fa-film"></i> نشر ريل</button>
                 </div>
                 <div id="reelsContainer"></div>
             </div>
 
             <!-- Messages Page -->
             <div id="messagesPage" class="page">
-                <div class="new-post">
+                <div class="new-post-box">
                     <input type="text" id="messageInput" placeholder="أرسل رسالة...">
-                    <button onclick="sendMessage()" style="width: 100%; margin-top: 10px;"><i class="fas fa-paper-plane"></i> إرسال</button>
+                    <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i> إرسال</button>
                 </div>
                 <div id="messagesContainer"></div>
             </div>
@@ -180,142 +205,152 @@
         </div>
     </div>
 
-    <!-- Firebase Scripts -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js"></script>
-
     <script>
-        let auth, database, currentUser = null;
+        let currentUser = null;
 
-        // Initialize Firebase
-        function initFirebase() {
-            if (window.firebase && !firebase.apps.length) {
-                firebase.initializeApp({
-                    apiKey: "AIzaSyCOnbAHgfn3zO4C7MylHUfRkWjqV3KA4D4",
-                    authDomain: "ash-social.firebaseapp.com",
-                    databaseURL: "https://ash-social-default-rtdb.firebaseio.com",
-                    projectId: "ash-social",
-                    storageBucket: "ash-social.firebasestorage.app",
-                    messagingSenderId: "379309356643",
-                    appId: "1:379309356643:web:b11382a1c148f8f0216a56"
-                });
-                auth = firebase.auth();
-                database = firebase.database();
-                console.log('✅ Firebase initialized');
-                checkAuth();
-            } else if (!window.firebase) {
-                setTimeout(initFirebase, 500);
+        // Initialize app
+        window.addEventListener('load', () => {
+            checkAuth();
+        });
+
+        // Check if user is logged in
+        function checkAuth() {
+            const user = localStorage.getItem('currentUser');
+            if (user) {
+                currentUser = JSON.parse(user);
+                showDashboard();
+                loadAllData();
+            } else {
+                showAuthContainer();
             }
         }
 
-        // Check authentication status
-        function checkAuth() {
-            auth.onAuthStateChanged(user => {
-                if (user) {
-                    currentUser = user;
-                    showDashboard();
-                    loadProfileData();
-                    loadPosts();
-                } else {
-                    showAuthContainer();
-                }
+        // Switch to register form
+        function switchToRegister() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('registerForm').classList.remove('hidden');
+            clearErrors();
+        }
+
+        // Switch to login form
+        function switchToLogin() {
+            document.getElementById('registerForm').classList.add('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+            clearErrors();
+        }
+
+        // Clear all error messages
+        function clearErrors() {
+            document.querySelectorAll('.error-msg').forEach(el => {
+                el.textContent = '';
+                el.classList.remove('show');
             });
         }
 
         // Handle Login
-        function handleLogin() {
+        function handleLogin(event) {
+            event.preventDefault();
+            clearErrors();
+
             const email = document.getElementById('loginEmail').value.trim();
             const password = document.getElementById('loginPassword').value.trim();
-            
-            clearErrors();
-            if (!email || !password) {
-                if (!email) document.getElementById('loginEmailError').textContent = 'البريد مطلوب';
-                if (!password) document.getElementById('loginPasswordError').textContent = 'كلمة المرور مطلوبة';
+
+            // Get all users from localStorage
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const user = users.find(u => u.email === email && u.password === password);
+
+            if (!user) {
+                document.getElementById('loginEmailError').textContent = 'البريد أو كلمة المرور غير صحيحة';
+                document.getElementById('loginEmailError').classList.add('show');
                 return;
             }
 
-            document.getElementById('loginLoading').classList.remove('hidden');
+            // Set current user
+            currentUser = user;
+            localStorage.setItem('currentUser', JSON.stringify(user));
+            document.getElementById('loginEmail').value = '';
+            document.getElementById('loginPassword').value = '';
             
-            auth.signInWithEmailAndPassword(email, password)
-                .then(() => {
-                    document.getElementById('loginLoading').classList.add('hidden');
-                    showDashboard();
-                })
-                .catch(error => {
-                    document.getElementById('loginLoading').classList.add('hidden');
-                    document.getElementById('loginEmailError').textContent = error.message;
-                });
+            showDashboard();
+            loadAllData();
         }
 
         // Handle Register
-        function handleRegister() {
+        function handleRegister(event) {
+            event.preventDefault();
+            clearErrors();
+
             const fullName = document.getElementById('fullName').value.trim();
             const email = document.getElementById('registerEmail').value.trim();
             const password = document.getElementById('registerPassword').value.trim();
-            const confirm = document.getElementById('confirmPassword').value.trim();
+            const confirmPassword = document.getElementById('confirmPassword').value.trim();
 
-            clearErrors();
-            if (!fullName || !email || !password || !confirm) {
-                if (!fullName) document.getElementById('fullNameError').textContent = 'الاسم مطلوب';
-                if (!email) document.getElementById('registerEmailError').textContent = 'البريد مطلوب';
-                if (!password) document.getElementById('registerPasswordError').textContent = 'كلمة المرور مطلوبة';
-                if (!confirm) document.getElementById('confirmPasswordError').textContent = 'التأكيد مطلوب';
+            // Validation
+            if (!fullName) {
+                document.getElementById('fullNameError').textContent = 'الاسم الكامل مطلوب';
+                document.getElementById('fullNameError').classList.add('show');
                 return;
             }
 
-            if (password !== confirm) {
-                document.getElementById('confirmPasswordError').textContent = 'كلمات المرور غير متطابقة';
+            if (!email) {
+                document.getElementById('registerEmailError').textContent = 'البريد الإلكتروني مطلوب';
+                document.getElementById('registerEmailError').classList.add('show');
                 return;
             }
 
             if (password.length < 6) {
-                document.getElementById('registerPasswordError').textContent = 'كلمة المرور 6 أحرف على الأقل';
+                document.getElementById('registerPasswordError').textContent = 'كلمة المرور يجب أن تكون 6 أحرف على الأقل';
+                document.getElementById('registerPasswordError').classList.add('show');
                 return;
             }
 
-            document.getElementById('registerLoading').classList.remove('hidden');
+            if (password !== confirmPassword) {
+                document.getElementById('confirmPasswordError').textContent = 'كلمات المرور غير متطابقة';
+                document.getElementById('confirmPasswordError').classList.add('show');
+                return;
+            }
 
-            auth.createUserWithEmailAndPassword(email, password)
-                .then(userCredential => {
-                    database.ref('users/' + userCredential.user.uid).set({
-                        fullName: fullName,
-                        email: email,
-                        bio: '',
-                        followers: 0,
-                        following: 0,
-                        posts: 0
-                    });
-                    document.getElementById('registerLoading').classList.add('hidden');
-                    alert('✅ تم إنشاء الحساب! ادخل الآن');
-                    toggleForms();
-                })
-                .catch(error => {
-                    document.getElementById('registerLoading').classList.add('hidden');
-                    document.getElementById('registerEmailError').textContent = error.message;
-                });
+            // Check if email already exists
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            if (users.some(u => u.email === email)) {
+                document.getElementById('registerEmailError').textContent = 'هذا البريد مسجل بالفعل';
+                document.getElementById('registerEmailError').classList.add('show');
+                return;
+            }
+
+            // Create new user
+            const newUser = {
+                id: Date.now(),
+                fullName: fullName,
+                email: email,
+                password: password,
+                bio: '',
+                followers: 0,
+                following: 0,
+                posts: 0
+            };
+
+            users.push(newUser);
+            localStorage.setItem('users', JSON.stringify(users));
+
+            alert('✅ تم إنشاء الحساب بنجاح! ادخل الآن');
+            
+            // Clear form and switch to login
+            document.getElementById('fullName').value = '';
+            document.getElementById('registerEmail').value = '';
+            document.getElementById('registerPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+            
+            switchToLogin();
         }
 
         // Handle Logout
         function handleLogout() {
             if (confirm('هل تريد تسجيل الخروج؟')) {
-                auth.signOut().then(() => {
-                    currentUser = null;
-                    showAuthContainer();
-                });
+                currentUser = null;
+                localStorage.removeItem('currentUser');
+                showAuthContainer();
             }
-        }
-
-        // Toggle Forms
-        function toggleForms() {
-            document.getElementById('loginForm').classList.toggle('hidden');
-            document.getElementById('registerForm').classList.toggle('hidden');
-            clearErrors();
-        }
-
-        // Clear Errors
-        function clearErrors() {
-            document.querySelectorAll('.error').forEach(el => el.textContent = '');
         }
 
         // Show/Hide UI
@@ -327,13 +362,14 @@
         function showDashboard() {
             document.getElementById('authContainer').classList.add('hidden');
             document.getElementById('dashboard').classList.remove('hidden');
+            updateProfileDisplay();
         }
 
         // Switch Pages
         function switchPage(page) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            
+
             const pageMap = {
                 'home': { element: 'homePage', btn: 0 },
                 'videos': { element: 'videosPage', btn: 1 },
@@ -346,11 +382,11 @@
                 document.getElementById(pageMap[page].element).classList.add('active');
                 document.querySelectorAll('.nav-btn')[pageMap[page].btn].classList.add('active');
                 
-                if (page === 'profile') loadProfileData();
-                else if (page === 'home') loadPosts();
+                if (page === 'home') loadPosts();
                 else if (page === 'videos') loadVideos();
                 else if (page === 'reels') loadReels();
                 else if (page === 'messages') loadMessages();
+                else if (page === 'profile') updateProfileDisplay();
             }
         }
 
@@ -362,15 +398,17 @@
                 return;
             }
 
-            const postId = Date.now().toString();
-            database.ref('posts/' + postId).set({
-                id: postId,
-                author: currentUser.email,
+            const posts = JSON.parse(localStorage.getItem('posts') || '[]');
+            posts.push({
+                id: Date.now(),
+                author: currentUser.fullName,
+                email: currentUser.email,
                 content: content,
                 likes: 0,
                 createdAt: new Date().toISOString()
             });
 
+            localStorage.setItem('posts', JSON.stringify(posts));
             document.getElementById('postContent').value = '';
             loadPosts();
         }
@@ -383,15 +421,17 @@
                 return;
             }
 
-            const videoId = Date.now().toString();
-            database.ref('videos/' + videoId).set({
-                id: videoId,
-                author: currentUser.email,
+            const videos = JSON.parse(localStorage.getItem('videos') || '[]');
+            videos.push({
+                id: Date.now(),
+                author: currentUser.fullName,
+                email: currentUser.email,
                 content: content,
                 likes: 0,
                 createdAt: new Date().toISOString()
             });
 
+            localStorage.setItem('videos', JSON.stringify(videos));
             document.getElementById('videoContent').value = '';
             loadVideos();
         }
@@ -404,15 +444,17 @@
                 return;
             }
 
-            const reelId = Date.now().toString();
-            database.ref('reels/' + reelId).set({
-                id: reelId,
-                author: currentUser.email,
+            const reels = JSON.parse(localStorage.getItem('reels') || '[]');
+            reels.push({
+                id: Date.now(),
+                author: currentUser.fullName,
+                email: currentUser.email,
                 content: content,
                 likes: 0,
                 createdAt: new Date().toISOString()
             });
 
+            localStorage.setItem('reels', JSON.stringify(reels));
             document.getElementById('reelContent').value = '';
             loadReels();
         }
@@ -425,170 +467,184 @@
                 return;
             }
 
-            const msgId = Date.now().toString();
-            database.ref('messages/' + msgId).set({
-                id: msgId,
-                sender: currentUser.email,
+            const messages = JSON.parse(localStorage.getItem('messages') || '[]');
+            messages.push({
+                id: Date.now(),
+                sender: currentUser.fullName,
+                email: currentUser.email,
                 content: content,
                 createdAt: new Date().toISOString()
             });
 
+            localStorage.setItem('messages', JSON.stringify(messages));
             document.getElementById('messageInput').value = '';
             loadMessages();
         }
 
         // Load Posts
         function loadPosts() {
-            database.ref('posts').orderByChild('createdAt').limitToLast(50).on('value', snapshot => {
-                const container = document.getElementById('postsContainer');
-                container.innerHTML = '';
-                const posts = [];
-                snapshot.forEach(child => posts.unshift(child.val()));
-                
-                if (posts.length === 0) {
-                    container.innerHTML = '<p style="text-align: center; color: #999;">لا توجد منشورات</p>';
-                    return;
-                }
+            const posts = JSON.parse(localStorage.getItem('posts') || '[]');
+            const container = document.getElementById('postsContainer');
+            container.innerHTML = '';
 
-                posts.forEach(post => {
-                    const postEl = document.createElement('div');
-                    postEl.className = 'post';
-                    postEl.innerHTML = `
+            if (posts.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><p>لا توجد منشورات</p></div>';
+                return;
+            }
+
+            posts.reverse().forEach(post => {
+                const date = new Date(post.createdAt).toLocaleDateString('ar-SA');
+                container.innerHTML += `
+                    <div class="post">
                         <div class="post-header">
-                            <span>${post.author}</span>
-                            <span class="post-time">${new Date(post.createdAt).toLocaleDateString('ar-SA')}</span>
+                            <span class="post-author">${post.author}</span>
+                            <span class="post-time">${date}</span>
                         </div>
                         <div class="post-content">${post.content}</div>
                         <div class="post-actions">
-                            <button class="post-btn" onclick="likePost('${post.id}')"><i class="fas fa-heart"></i> ${post.likes}</button>
-                            <button class="post-btn"><i class="fas fa-comment"></i> تعليق</button>
-                            <button class="post-btn"><i class="fas fa-share"></i> شارك</button>
+                            <button class="action-btn" onclick="likePost(${post.id})"><i class="fas fa-heart"></i> ${post.likes}</button>
+                            <button class="action-btn"><i class="fas fa-comment"></i> تعليق</button>
+                            <button class="action-btn"><i class="fas fa-share"></i> شارك</button>
                         </div>
-                    `;
-                    container.appendChild(postEl);
-                });
+                    </div>
+                `;
             });
         }
 
         // Load Videos
         function loadVideos() {
-            database.ref('videos').orderByChild('createdAt').limitToLast(50).on('value', snapshot => {
-                const container = document.getElementById('videosContainer');
-                container.innerHTML = '';
-                const videos = [];
-                snapshot.forEach(child => videos.unshift(child.val()));
-                
-                if (videos.length === 0) {
-                    container.innerHTML = '<p style="text-align: center; color: #999;">لا توجد فيديوهات</p>';
-                    return;
-                }
+            const videos = JSON.parse(localStorage.getItem('videos') || '[]');
+            const container = document.getElementById('videosContainer');
+            container.innerHTML = '';
 
-                videos.forEach(video => {
-                    const videoEl = document.createElement('div');
-                    videoEl.className = 'post';
-                    videoEl.innerHTML = `
+            if (videos.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-video"></i><p>لا توجد فيديوهات</p></div>';
+                return;
+            }
+
+            videos.reverse().forEach(video => {
+                const date = new Date(video.createdAt).toLocaleDateString('ar-SA');
+                container.innerHTML += `
+                    <div class="post">
                         <div class="post-header">
-                            <span>${video.author}</span>
-                            <span class="post-time">${new Date(video.createdAt).toLocaleDateString('ar-SA')}</span>
+                            <span class="post-author">${video.author}</span>
+                            <span class="post-time">${date}</span>
                         </div>
                         <div class="post-content">${video.content}</div>
                         <div class="post-actions">
-                            <button class="post-btn" onclick="likeVideo('${video.id}')"><i class="fas fa-heart"></i> ${video.likes}</button>
+                            <button class="action-btn" onclick="likeVideo(${video.id})"><i class="fas fa-heart"></i> ${video.likes}</button>
                         </div>
-                    `;
-                    container.appendChild(videoEl);
-                });
+                    </div>
+                `;
             });
         }
 
         // Load Reels
         function loadReels() {
-            database.ref('reels').orderByChild('createdAt').limitToLast(50).on('value', snapshot => {
-                const container = document.getElementById('reelsContainer');
-                container.innerHTML = '';
-                const reels = [];
-                snapshot.forEach(child => reels.unshift(child.val()));
-                
-                if (reels.length === 0) {
-                    container.innerHTML = '<p style="text-align: center; color: #999;">لا توجد ريلز</p>';
-                    return;
-                }
+            const reels = JSON.parse(localStorage.getItem('reels') || '[]');
+            const container = document.getElementById('reelsContainer');
+            container.innerHTML = '';
 
-                reels.forEach(reel => {
-                    const reelEl = document.createElement('div');
-                    reelEl.className = 'post';
-                    reelEl.innerHTML = `
+            if (reels.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-film"></i><p>لا توجد ريلز</p></div>';
+                return;
+            }
+
+            reels.reverse().forEach(reel => {
+                const date = new Date(reel.createdAt).toLocaleDateString('ar-SA');
+                container.innerHTML += `
+                    <div class="post">
                         <div class="post-header">
-                            <span>${reel.author}</span>
-                            <span class="post-time">${new Date(reel.createdAt).toLocaleDateString('ar-SA')}</span>
+                            <span class="post-author">${reel.author}</span>
+                            <span class="post-time">${date}</span>
                         </div>
                         <div class="post-content">${reel.content}</div>
                         <div class="post-actions">
-                            <button class="post-btn" onclick="likeReel('${reel.id}')"><i class="fas fa-heart"></i> ${reel.likes}</button>
+                            <button class="action-btn" onclick="likeReel(${reel.id})"><i class="fas fa-heart"></i> ${reel.likes}</button>
                         </div>
-                    `;
-                    container.appendChild(reelEl);
-                });
+                    </div>
+                `;
             });
         }
 
         // Load Messages
         function loadMessages() {
-            database.ref('messages').orderByChild('createdAt').limitToLast(50).on('value', snapshot => {
-                const container = document.getElementById('messagesContainer');
-                container.innerHTML = '';
-                const messages = [];
-                snapshot.forEach(child => messages.unshift(child.val()));
-                
-                if (messages.length === 0) {
-                    container.innerHTML = '<p style="text-align: center; color: #999;">لا توجد رسائل</p>';
-                    return;
-                }
+            const messages = JSON.parse(localStorage.getItem('messages') || '[]');
+            const container = document.getElementById('messagesContainer');
+            container.innerHTML = '';
 
-                messages.forEach(msg => {
-                    const msgEl = document.createElement('div');
-                    msgEl.className = 'post';
-                    msgEl.innerHTML = `
+            if (messages.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-comment"></i><p>لا توجد رسائل</p></div>';
+                return;
+            }
+
+            messages.reverse().forEach(msg => {
+                const time = new Date(msg.createdAt).toLocaleTimeString('ar-SA');
+                container.innerHTML += `
+                    <div class="post">
                         <div class="post-header">
-                            <span>${msg.sender}</span>
-                            <span class="post-time">${new Date(msg.createdAt).toLocaleTimeString('ar-SA')}</span>
+                            <span class="post-author">${msg.sender}</span>
+                            <span class="post-time">${time}</span>
                         </div>
                         <div class="post-content">${msg.content}</div>
-                    `;
-                    container.appendChild(msgEl);
-                });
+                    </div>
+                `;
             });
         }
 
-        // Load Profile Data
-        function loadProfileData() {
+        // Update Profile Display
+        function updateProfileDisplay() {
             if (!currentUser) return;
-            
-            database.ref('users/' + currentUser.uid).on('value', snapshot => {
-                const userData = snapshot.val() || {};
-                document.getElementById('profileName').textContent = userData.fullName || currentUser.email;
-                document.getElementById('profileEmail').textContent = currentUser.email;
-                document.getElementById('postsCount').textContent = userData.posts || 0;
-                document.getElementById('followersCount').textContent = userData.followers || 0;
-                document.getElementById('followingCount').textContent = userData.following || 0;
-            });
+
+            document.getElementById('profileName').textContent = currentUser.fullName;
+            document.getElementById('profileEmail').textContent = currentUser.email;
+
+            const posts = JSON.parse(localStorage.getItem('posts') || '[]');
+            const userPosts = posts.filter(p => p.email === currentUser.email).length;
+            document.getElementById('postsCount').textContent = userPosts;
+            document.getElementById('followersCount').textContent = currentUser.followers || 0;
+            document.getElementById('followingCount').textContent = currentUser.following || 0;
+        }
+
+        // Load All Data
+        function loadAllData() {
+            loadPosts();
+            loadVideos();
+            loadReels();
+            loadMessages();
+            updateProfileDisplay();
         }
 
         // Like Functions
         function likePost(postId) {
-            database.ref('posts/' + postId + '/likes').transaction(current => (current || 0) + 1);
+            const posts = JSON.parse(localStorage.getItem('posts') || '[]');
+            const post = posts.find(p => p.id === postId);
+            if (post) {
+                post.likes++;
+                localStorage.setItem('posts', JSON.stringify(posts));
+                loadPosts();
+            }
         }
 
         function likeVideo(videoId) {
-            database.ref('videos/' + videoId + '/likes').transaction(current => (current || 0) + 1);
+            const videos = JSON.parse(localStorage.getItem('videos') || '[]');
+            const video = videos.find(v => v.id === videoId);
+            if (video) {
+                video.likes++;
+                localStorage.setItem('videos', JSON.stringify(videos));
+                loadVideos();
+            }
         }
 
         function likeReel(reelId) {
-            database.ref('reels/' + reelId + '/likes').transaction(current => (current || 0) + 1);
+            const reels = JSON.parse(localStorage.getItem('reels') || '[]');
+            const reel = reels.find(r => r.id === reelId);
+            if (reel) {
+                reel.likes++;
+                localStorage.setItem('reels', JSON.stringify(reels));
+                loadReels();
+            }
         }
-
-        // Initialize on load
-        window.addEventListener('load', initFirebase);
     </script>
 </body>
 </html>
