@@ -3,143 +3,386 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ASH SOCIAL - تطبيق التواصل الاجتماعي</title>
+  <title>ASH SOCIAL - تطبيق التواصل الاجتماعي الجديد</title>
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
+    
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    body.home-bg {
       background: #f0f2f5;
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 400px;
+    }
+    
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 40px 30px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+    
+    .logo {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    
+    .logo h1 {
+      color: #667eea;
+      font-size: 32px;
+      font-weight: 700;
+    }
+    
+    .subtitle {
+      text-align: center;
+      color: #999;
+      font-size: 14px;
+      margin-bottom: 30px;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    .form-group label {
+      display: block;
+      color: #333;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+    
+    .form-group input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      transition: border-color 0.3s;
+    }
+    
+    .form-group input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .form-group input::placeholder {
+      color: #bbb;
+    }
+    
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      margin: 20px 0;
+      gap: 10px;
+    }
+    
+    .checkbox-group input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      accent-color: #667eea;
+    }
+    
+    .checkbox-group label {
+      margin: 0;
+      font-size: 13px;
+      color: #666;
+      cursor: pointer;
+      flex: 1;
+    }
+    
+    .checkbox-group a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    
+    .checkbox-group a:hover {
+      text-decoration: underline;
+    }
+    
+    .btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 10px;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-secondary {
+      background: white;
+      color: #333;
+      border: 1px solid #ddd;
+    }
+    
+    .btn-secondary:hover {
+      background: #f5f5f5;
+    }
+    
+    .divider {
+      text-align: center;
+      margin: 20px 0;
+      color: #999;
+      font-size: 13px;
+    }
+    
+    .footer-text {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 13px;
+      color: #999;
+    }
+    
+    .footer-text a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    
+    .footer-text a:hover {
+      text-decoration: underline;
+    }
+    
+    .error {
+      color: #e74c3c;
+      font-size: 13px;
+      margin-top: 5px;
+      display: none;
+    }
+    
+    .error.show {
+      display: block;
+    }
+    
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal.show {
+      display: flex;
+    }
+    
+    .modal-content {
+      background: white;
+      border-radius: 16px;
+      max-width: 500px;
+      max-height: 80vh;
+      overflow-y: auto;
+      padding: 30px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+    
+    .modal-content h2 {
+      color: #333;
+      margin-bottom: 20px;
+      font-size: 20px;
+    }
+    
+    .modal-content p {
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 15px;
+      font-size: 14px;
+    }
+    
+    .modal-content h3 {
+      color: #333;
+      margin-top: 20px;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+    
+    .modal-content ul {
+      margin-right: 20px;
+      color: #666;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+    
+    .modal-content li {
+      margin-bottom: 8px;
+    }
+    
+    .modal-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 30px;
+    }
+    
+    .modal-buttons button {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .modal-buttons .btn-reject {
+      background: #f0f0f0;
       color: #333;
     }
+    
+    .modal-buttons .btn-reject:hover {
+      background: #e0e0e0;
+    }
+    
+    .modal-buttons .btn-accept {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    
+    .modal-buttons .btn-accept:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+    
+    .page {
+      display: none;
+    }
+    
+    .page.show {
+      display: block;
+    }
+    
     .navbar {
       background: white;
       padding: 15px 20px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-bottom: 20px;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
     }
-    .logo {
+    
+    .navbar-logo {
       font-size: 24px;
       font-weight: bold;
-      color: #1877f2;
+      color: #667eea;
     }
-    .nav-links {
+    
+    .navbar-links {
       display: flex;
       gap: 20px;
     }
-    .nav-links button {
+    
+    .navbar-links button {
       background: none;
       border: none;
       cursor: pointer;
-      font-size: 16px;
+      font-size: 14px;
       color: #333;
       padding: 8px 12px;
-      border-radius: 4px;
+      border-radius: 6px;
       transition: background 0.3s;
     }
-    .nav-links button:hover {
-      background: #f0f2f5;
+    
+    .navbar-links button:hover {
+      background: #f0f0f0;
     }
-    .logout-btn {
-      background: #1877f2 !important;
-      color: white !important;
-    }
-    .logout-btn:hover {
-      background: #165ec9 !important;
-    }
-    .container {
-      max-width: 600px;
-      margin: 20px auto;
-      padding: 0 10px;
-    }
-    .login-box {
-      background: white;
-      padding: 40px;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      text-align: center;
-    }
-    .login-title {
-      font-size: 32px;
-      color: #1877f2;
-      margin-bottom: 10px;
-    }
-    .login-subtitle {
-      color: #666;
-      margin-bottom: 30px;
-    }
-    .form-group {
-      margin-bottom: 15px;
-      text-align: right;
-    }
-    .form-group label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 500;
-    }
-    .form-group input {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 16px;
-    }
-    .login-btn {
-      width: 100%;
-      padding: 12px;
-      background: #1877f2;
+    
+    .navbar-links .logout-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
-      border: none;
-      border-radius: 4px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 20px;
     }
-    .login-btn:hover {
-      background: #165ec9;
+    
+    .navbar-links .logout-btn:hover {
+      opacity: 0.9;
     }
+    
+    .home-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
     .post-card {
       background: white;
       padding: 20px;
       margin-bottom: 15px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
+    
     .post-header {
       display: flex;
       align-items: center;
       margin-bottom: 15px;
     }
+    
     .avatar {
       width: 40px;
       height: 40px;
       border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
       margin-left: 10px;
     }
-    .user-info h3 {
-      font-size: 16px;
-      margin-bottom: 4px;
-    }
-    .post-time {
-      font-size: 12px;
-      color: #999;
-    }
+    
     .post-content {
       margin-bottom: 15px;
-      line-height: 1.5;
+      line-height: 1.6;
+      color: #333;
     }
+    
     .post-actions {
       display: flex;
       justify-content: space-around;
       border-top: 1px solid #eee;
       padding-top: 10px;
     }
+    
     .action-btn {
       background: none;
       border: none;
@@ -150,206 +393,303 @@
       display: flex;
       align-items: center;
       gap: 8px;
+      transition: color 0.3s;
     }
+    
     .action-btn:hover {
-      color: #1877f2;
-    }
-    .create-post {
-      background: white;
-      padding: 20px;
-      margin-bottom: 15px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .create-post textarea {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 16px;
-      font-family: inherit;
-      resize: vertical;
-    }
-    .create-post button {
-      width: 100%;
-      padding: 10px;
-      background: #1877f2;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-    .create-post button:hover {
-      background: #165ec9;
-    }
-    .hidden {
-      display: none;
+      color: #667eea;
     }
   </style>
 </head>
 <body>
-  <div class="navbar">
-    <h1 class="logo">ASH SOCIAL</h1>
-    <div class="nav-links">
-      <button onclick="showPage('home')">الرئيسية</button>
-      <button onclick="showPage('messages')">الرسائل</button>
-      <button onclick="showPage('profile')">الملف الشخصي</button>
-      <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
-    </div>
-  </div>
-
-  <div id="loginPage" class="container">
-    <div class="login-box">
-      <h1 class="login-title">ASH SOCIAL</h1>
-      <p class="login-subtitle">تطبيق التواصل الاجتماعي</p>
-      <form onsubmit="handleLogin(event)">
-        <div class="form-group">
-          <label>البريد الإلكتروني</label>
-          <input type="email" id="email" placeholder="أدخل بريدك الإلكتروني" required>
+  <!-- Login Page -->
+  <div id="loginPage" class="page show">
+    <div class="container">
+      <div class="card">
+        <div class="logo">
+          <h1>ASH SOCIAL</h1>
         </div>
-        <div class="form-group">
-          <label>كلمة المرور</label>
-          <input type="password" id="password" placeholder="أدخل كلمة المرور" required>
+        <p class="subtitle">مرحبا بعودتك</p>
+        
+        <form id="loginForm" onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label>البريد الإلكتروني أو رقم الهاتف</label>
+            <input type="text" id="loginEmail" placeholder="your@email.com" required>
+            <div class="error" id="loginEmailError"></div>
+          </div>
+          
+          <div class="form-group">
+            <label>كلمة المرور</label>
+            <input type="password" id="loginPassword" placeholder="••••••••" required>
+            <div class="error" id="loginPasswordError"></div>
+          </div>
+          
+          <button type="submit" class="btn btn-primary">دخول</button>
+        </form>
+        
+        <div class="divider">أو</div>
+        
+        <button class="btn btn-secondary" onclick="alert('ميزة Google قريباً')">
+          <span>🔐 Google</span>
+        </button>
+        
+        <div class="footer-text">
+          ليس لديك حساب؟ <a href="#" onclick="showRegister(event)">إنشاء حساب</a>
         </div>
-        <button type="submit" class="login-btn">تسجيل الدخول</button>
-      </form>
+      </div>
     </div>
   </div>
-
-  <div id="homePage" class="container hidden">
-    <div class="create-post">
-      <form onsubmit="handleCreatePost(event)">
-        <textarea id="postContent" placeholder="ما الذي يشغل بالك؟" rows="3"></textarea>
-        <button type="submit">نشر</button>
-      </form>
+  
+  <!-- Register Page -->
+  <div id="registerPage" class="page">
+    <div class="container">
+      <div class="card">
+        <div class="logo">
+          <h1>ASH SOCIAL</h1>
+        </div>
+        <p class="subtitle">انضم إلى مجتمعنا اليوم</p>
+        
+        <form id="registerForm" onsubmit="handleRegister(event)">
+          <div class="form-group">
+            <label>الاسم الكامل</label>
+            <input type="text" id="fullName" placeholder="أحمد محمد" required>
+          </div>
+          
+          <div class="form-group">
+            <label>اسم المستخدم</label>
+            <input type="text" id="username" placeholder="ahmed_dev" required>
+          </div>
+          
+          <div class="form-group">
+            <label>البريد الإلكتروني</label>
+            <input type="email" id="registerEmail" placeholder="your@email.com" required>
+          </div>
+          
+          <div class="form-group">
+            <label>رقم الهاتف</label>
+            <input type="tel" id="phone" placeholder="+966501234567">
+          </div>
+          
+          <div class="form-group">
+            <label>كلمة المرور</label>
+            <input type="password" id="registerPassword" placeholder="••••••••" required>
+          </div>
+          
+          <div class="form-group">
+            <label>تأكيد كلمة المرور</label>
+            <input type="password" id="confirmPassword" placeholder="••••••••" required>
+          </div>
+          
+          <button type="submit" class="btn btn-primary">إنشاء حساب</button>
+        </form>
+        
+        <div class="footer-text">
+          هل لديك حساب بالفعل؟ <a href="#" onclick="showLogin(event)">دخول</a>
+        </div>
+      </div>
     </div>
-    <div id="postsFeed"></div>
   </div>
-
-  <div id="messagesPage" class="container hidden">
-    <div class="post-card">
-      <h2>الرسائل</h2>
-      <p>لا توجد رسائل حتى الآن</p>
-    </div>
-  </div>
-
-  <div id="profilePage" class="container hidden">
-    <div class="post-card">
-      <h2>الملف الشخصي</h2>
-      <p>أحمد محمد</p>
-      <p>مرحباً بك في ملفي الشخصي</p>
-    </div>
-  </div>
-
-  <script>
-    let isLoggedIn = localStorage.getItem('token');
-    let posts = [
-      {
-        id: 1,
-        name: 'أحمد محمد',
-        avatar: 'https://via.placeholder.com/40',
-        content: 'مرحباً بك في ASH SOCIAL! 🎉',
-        likes: 5,
-      }
-    ];
-
-    if (isLoggedIn) {
-      document.getElementById('loginPage').classList.add('hidden');
-    } else {
-      document.getElementById('homePage').classList.add('hidden');
-      document.getElementById('messagesPage').classList.add('hidden');
-      document.getElementById('profilePage').classList.add('hidden');
-    }
-
-    function handleLogin(event) {
-      event.preventDefault();
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
+  
+  <!-- Terms Modal -->
+  <div id="termsModal" class="modal">
+    <div class="modal-content">
+      <h2>شروط الاستخدام والسياسات</h2>
       
-      if (email && password) {
-        localStorage.setItem('token', btoa(email + ':' + password));
-        localStorage.setItem('user', JSON.stringify({ email, name: email.split('@')[0] }));
-        document.getElementById('loginPage').classList.add('hidden');
-        document.getElementById('homePage').classList.remove('hidden');
-        renderPosts();
-      }
-    }
-
-    function logout() {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      document.getElementById('loginPage').classList.remove('hidden');
-      document.getElementById('homePage').classList.add('hidden');
-      document.getElementById('messagesPage').classList.add('hidden');
-      document.getElementById('profilePage').classList.add('hidden');
-      document.getElementById('email').value = '';
-      document.getElementById('password').value = '';
-    }
-
-    function showPage(page) {
-      document.getElementById('homePage').classList.add('hidden');
-      document.getElementById('messagesPage').classList.add('hidden');
-      document.getElementById('profilePage').classList.add('hidden');
+      <h3>1. قبول الشروط</h3>
+      <p>بالنقر على "أوافق"، فإنك توافق على جميع شروط الاستخدام والسياسات التالية.</p>
       
-      if (page === 'home') {
-        document.getElementById('homePage').classList.remove('hidden');
-        renderPosts();
-      } else if (page === 'messages') {
-        document.getElementById('messagesPage').classList.remove('hidden');
-      } else if (page === 'profile') {
-        document.getElementById('profilePage').classList.remove('hidden');
-      }
-    }
-
-    function handleCreatePost(event) {
-      event.preventDefault();
-      const content = document.getElementById('postContent').value;
+      <h3>2. حقوق الاستخدام</h3>
+      <ul>
+        <li>يمكنك استخدام التطبيق فقط للأغراض القانونية</li>
+        <li>لا يمكنك نسخ أو توزيع محتوى التطبيق بدون إذن</li>
+        <li>أنت مسؤول عن سرية كلمة المرور الخاصة بك</li>
+      </ul>
       
-      if (content.trim()) {
-        posts.unshift({
-          id: posts.length + 1,
-          name: 'أنت',
-          avatar: 'https://via.placeholder.com/40',
-          content: content,
-          likes: 0,
-        });
-        document.getElementById('postContent').value = '';
-        renderPosts();
-      }
-    }
-
-    function renderPosts() {
-      const feed = document.getElementById('postsFeed');
-      feed.innerHTML = posts.map(post => `
+      <h3>3. المحتوى المحظور</h3>
+      <ul>
+        <li>المحتوى العنيف أو المسيء</li>
+        <li>المحتوى الجنسي أو الإباحي</li>
+        <li>المحتوى التمييزي أو الكراهية</li>
+        <li>المحتوى الذي ينتهك الملكية الفكرية</li>
+      </ul>
+      
+      <h3>4. الخصوصية</h3>
+      <p>نحن نحترم خصوصيتك ولن نشارك بيانات شخصية مع أطراف ثالثة بدون موافقتك.</p>
+      
+      <h3>5. المسؤولية</h3>
+      <p>التطبيق يُقدم "كما هو" بدون ضمانات. نحن لا نتحمل مسؤولية عن أي خسائر أو أضرار.</p>
+      
+      <h3>6. التعديلات</h3>
+      <p>نحتفظ بحق تعديل هذه الشروط في أي وقت. سيتم إخطارك بأي تغييرات مهمة.</p>
+      
+      <div class="modal-buttons">
+        <button class="btn-reject" onclick="rejectTerms()">رفض</button>
+        <button class="btn-accept" onclick="acceptTerms()">أوافق</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Home Page -->
+  <div id="homePage" class="page">
+    <div class="navbar">
+      <div class="navbar-logo">ASH SOCIAL</div>
+      <div class="navbar-links">
+        <button onclick="showHome()">الرئيسية</button>
+        <button onclick="showMessages()">الرسائل</button>
+        <button onclick="showProfile()">الملف الشخصي</button>
+        <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
+      </div>
+    </div>
+    
+    <div class="home-content">
+      <div id="postsFeed">
         <div class="post-card">
           <div class="post-header">
-            <img src="${post.avatar}" alt="${post.name}" class="avatar">
-            <div class="user-info">
-              <h3>${post.name}</h3>
-              <p class="post-time">الآن</p>
+            <div class="avatar">أ</div>
+            <div>
+              <strong>أحمد محمد</strong>
+              <p style="font-size: 12px; color: #999;">الآن</p>
             </div>
           </div>
           <div class="post-content">
-            <p>${post.content}</p>
+            مرحباً بك في ASH SOCIAL! 🎉 تطبيق التواصل الاجتماعي الجديد
           </div>
           <div class="post-actions">
-            <button class="action-btn" onclick="likePost(${post.id})">❤️ إعجاب (${post.likes})</button>
+            <button class="action-btn">❤️ إعجاب (5)</button>
             <button class="action-btn">💬 تعليق</button>
             <button class="action-btn">📤 مشاركة</button>
           </div>
         </div>
-      `).join('');
-    }
+      </div>
+    </div>
+  </div>
 
-    function likePost(postId) {
-      const post = posts.find(p => p.id === postId);
-      if (post) {
-        post.likes++;
-        renderPosts();
+  <script>
+    let currentUser = null;
+    let termsAccepted = false;
+    
+    // Check if user is logged in
+    window.addEventListener('load', function() {
+      const user = localStorage.getItem('user');
+      if (user) {
+        currentUser = JSON.parse(user);
+        showHome();
       }
+    });
+    
+    function showLogin(e) {
+      if (e) e.preventDefault();
+      document.getElementById('loginPage').classList.add('show');
+      document.getElementById('registerPage').classList.remove('show');
+      document.getElementById('homePage').classList.remove('show');
+      document.body.classList.remove('home-bg');
+    }
+    
+    function showRegister(e) {
+      if (e) e.preventDefault();
+      document.getElementById('loginPage').classList.remove('show');
+      document.getElementById('registerPage').classList.add('show');
+      document.getElementById('homePage').classList.remove('show');
+      document.body.classList.remove('home-bg');
+    }
+    
+    function showHome() {
+      if (!currentUser) {
+        showLogin();
+        return;
+      }
+      document.getElementById('loginPage').classList.remove('show');
+      document.getElementById('registerPage').classList.remove('show');
+      document.getElementById('homePage').classList.add('show');
+      document.body.classList.add('home-bg');
+    }
+    
+    function showMessages() {
+      alert('ميزة الرسائل قريباً');
+    }
+    
+    function showProfile() {
+      alert('ملفك الشخصي: ' + currentUser.name);
+    }
+    
+    function handleLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      
+      if (!email || !password) {
+        alert('الرجاء ملء جميع الحقول');
+        return;
+      }
+      
+      // Show terms modal
+      termsAccepted = false;
+      document.getElementById('termsModal').classList.add('show');
+      
+      // Store login data temporarily
+      window.tempLoginData = { email, password };
+    }
+    
+    function handleRegister(e) {
+      e.preventDefault();
+      const fullName = document.getElementById('fullName').value;
+      const username = document.getElementById('username').value;
+      const email = document.getElementById('registerEmail').value;
+      const phone = document.getElementById('phone').value;
+      const password = document.getElementById('registerPassword').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      
+      if (password !== confirmPassword) {
+        alert('كلمات المرور غير متطابقة');
+        return;
+      }
+      
+      // Show terms modal
+      termsAccepted = false;
+      document.getElementById('termsModal').classList.add('show');
+      
+      // Store register data temporarily
+      window.tempRegisterData = { fullName, username, email, phone, password };
+    }
+    
+    function acceptTerms() {
+      termsAccepted = true;
+      document.getElementById('termsModal').classList.remove('show');
+      
+      if (window.tempLoginData) {
+        const data = window.tempLoginData;
+        currentUser = {
+          email: data.email,
+          name: data.email.split('@')[0]
+        };
+        localStorage.setItem('user', JSON.stringify(currentUser));
+        window.tempLoginData = null;
+        showHome();
+      } else if (window.tempRegisterData) {
+        const data = window.tempRegisterData;
+        currentUser = {
+          name: data.fullName,
+          username: data.username,
+          email: data.email,
+          phone: data.phone
+        };
+        localStorage.setItem('user', JSON.stringify(currentUser));
+        window.tempRegisterData = null;
+        showHome();
+      }
+    }
+    
+    function rejectTerms() {
+      document.getElementById('termsModal').classList.remove('show');
+      window.tempLoginData = null;
+      window.tempRegisterData = null;
+      alert('يجب أن توافق على الشروط لاستخدام التطبيق');
+    }
+    
+    function logout() {
+      localStorage.removeItem('user');
+      currentUser = null;
+      showLogin();
     }
   </script>
 </body>
