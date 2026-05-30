@@ -8,6 +8,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     * {
       margin: 0;
@@ -108,41 +109,6 @@
       box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
     }
     
-    .btn-secondary {
-      background: white;
-      color: #333;
-      border: 1px solid #ddd;
-    }
-    
-    .btn-secondary:hover {
-      background: #f5f5f5;
-    }
-    
-    .divider {
-      text-align: center;
-      margin: 20px 0;
-      color: #999;
-      font-size: 13px;
-    }
-    
-    .footer-text {
-      text-align: center;
-      margin-top: 20px;
-      font-size: 13px;
-      color: #999;
-    }
-    
-    .footer-text a {
-      color: #667eea;
-      text-decoration: none;
-      font-weight: 500;
-      cursor: pointer;
-    }
-    
-    .footer-text a:hover {
-      text-decoration: underline;
-    }
-    
     .error-message {
       color: #e74c3c;
       font-size: 13px;
@@ -165,6 +131,7 @@
       z-index: 1000;
       align-items: center;
       justify-content: center;
+      overflow-y: auto;
     }
     
     .modal.show {
@@ -179,6 +146,7 @@
       overflow-y: auto;
       padding: 30px;
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      margin: 20px;
     }
     
     .modal-content h2 {
@@ -192,20 +160,6 @@
       line-height: 1.6;
       margin-bottom: 15px;
       font-size: 14px;
-    }
-    
-    .modal-content h3 {
-      color: #333;
-      margin-top: 20px;
-      margin-bottom: 10px;
-      font-size: 16px;
-    }
-    
-    .modal-content ul {
-      margin-right: 20px;
-      color: #666;
-      font-size: 14px;
-      line-height: 1.8;
     }
     
     .modal-buttons {
@@ -285,10 +239,6 @@
     .app-navbar-links .logout-btn {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
-    }
-    
-    .app-navbar-links .logout-btn:hover {
-      opacity: 0.9;
     }
     
     .app-container {
@@ -543,6 +493,8 @@
       border-radius: 12px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       overflow: hidden;
+      max-height: 500px;
+      overflow-y: auto;
     }
     
     .message-item {
@@ -624,6 +576,41 @@
       font-weight: 600;
     }
     
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: white;
+      padding: 16px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 2000;
+      animation: slideIn 0.3s ease-out;
+    }
+    
+    @keyframes slideIn {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    
+    .notification.success {
+      border-left: 4px solid #27ae60;
+    }
+    
+    .notification.error {
+      border-left: 4px solid #e74c3c;
+    }
+    
+    .notification.info {
+      border-left: 4px solid #3498db;
+    }
+    
     @media (max-width: 768px) {
       .two-column {
         grid-template-columns: 1fr;
@@ -632,6 +619,66 @@
       .sidebar {
         display: none;
       }
+    }
+    
+    .file-input {
+      display: none;
+    }
+    
+    .profile-info {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .profile-info h3 {
+      color: #333;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+    
+    .profile-info-item {
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .profile-info-item:last-child {
+      border-bottom: none;
+    }
+    
+    .profile-info-label {
+      color: #999;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    
+    .profile-info-value {
+      color: #333;
+      font-size: 14px;
+      margin-top: 4px;
+    }
+    
+    .reel-card {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-bottom: 15px;
+    }
+    
+    .reel-video {
+      width: 100%;
+      height: 300px;
+      background: #000;
+      border-radius: 8px;
+    }
+    
+    .reel-info {
+      padding: 15px;
     }
   </style>
 </head>
@@ -657,13 +704,11 @@
             <input type="password" id="loginPassword" placeholder="••••••••" required>
           </div>
           
-          <button type="submit" class="btn btn-primary">دخول</button>
+          <button type="submit" class="btn btn-primary"><i class="fas fa-sign-in-alt"></i> دخول</button>
         </form>
         
-        <div class="divider">أو</div>
-        
-        <div class="footer-text">
-          ليس لديك حساب؟ <a onclick="showRegister()">إنشاء حساب</a>
+        <div style="text-align: center; margin-top: 20px; color: #999; font-size: 13px;">
+          ليس لديك حساب؟ <a onclick="showRegister()" style="color: #667eea; cursor: pointer; font-weight: 600;">إنشاء حساب</a>
         </div>
       </div>
     </div>
@@ -699,11 +744,11 @@
             <input type="password" id="confirmPassword" placeholder="••••••••" required>
           </div>
           
-          <button type="submit" class="btn btn-primary">إنشاء حساب</button>
+          <button type="submit" class="btn btn-primary"><i class="fas fa-user-plus"></i> إنشاء حساب</button>
         </form>
         
-        <div class="footer-text">
-          هل لديك حساب؟ <a onclick="showLogin()">دخول</a>
+        <div style="text-align: center; margin-top: 20px; color: #999; font-size: 13px;">
+          هل لديك حساب؟ <a onclick="showLogin()" style="color: #667eea; cursor: pointer; font-weight: 600;">دخول</a>
         </div>
       </div>
     </div>
@@ -712,17 +757,18 @@
   <!-- Terms Modal -->
   <div id="termsModal" class="modal">
     <div class="modal-content">
-      <h2>شروط الاستخدام والسياسات</h2>
+      <h2><i class="fas fa-file-contract"></i> شروط الاستخدام والسياسات</h2>
       <p>بالموافقة على هذه الشروط، فإنك توافق على:</p>
-      <ul>
+      <ul style="margin-right: 20px; color: #666; font-size: 14px; line-height: 1.8;">
         <li>استخدام التطبيق للأغراض القانونية فقط</li>
         <li>عدم نشر محتوى مسيء أو عنيف</li>
         <li>احترام خصوصية المستخدمين الآخرين</li>
         <li>عدم انتهاك حقوق الملكية الفكرية</li>
+        <li>عدم استخدام التطبيق للتنمر أو الإساءة</li>
       </ul>
       <div class="modal-buttons">
-        <button class="btn-reject" onclick="rejectTerms()">رفض</button>
-        <button class="btn-accept" onclick="acceptTerms()">أوافق</button>
+        <button class="btn-reject" onclick="rejectTerms()"><i class="fas fa-times"></i> رفض</button>
+        <button class="btn-accept" onclick="acceptTerms()"><i class="fas fa-check"></i> أوافق</button>
       </div>
     </div>
   </div>
@@ -730,15 +776,18 @@
   <!-- App Pages -->
   <div id="appPage" class="page">
     <div class="app-navbar">
-      <div class="app-navbar-logo">ASH SOCIAL</div>
+      <div class="app-navbar-logo"><i class="fas fa-share-alt"></i> ASH SOCIAL</div>
       <div class="app-navbar-links">
-        <button onclick="showHome()">🏠 الرئيسية</button>
-        <button onclick="showMessages()">💬 الرسائل</button>
-        <button onclick="showProfile()">👤 ملفي</button>
-        <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
+        <button onclick="showHome()" title="الرئيسية"><i class="fas fa-home"></i> الرئيسية</button>
+        <button onclick="showReels()" title="الريلزات"><i class="fas fa-video"></i> الريلزات</button>
+        <button onclick="showMessages()" title="الرسائل"><i class="fas fa-envelope"></i> الرسائل</button>
+        <button onclick="showNotifications()" title="الإشعارات"><i class="fas fa-bell"></i> <span id="notifBadge" style="display:none; background: #e74c3c; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px;">0</span></button>
+        <button onclick="showProfile()" title="ملفي"><i class="fas fa-user"></i> ملفي</button>
+        <button class="logout-btn" onclick="logout()" title="تسجيل الخروج"><i class="fas fa-sign-out-alt"></i> خروج</button>
       </div>
     </div>
     
+    <!-- Home Page -->
     <div id="homePage" class="page show">
       <div class="app-container">
         <div class="two-column">
@@ -746,20 +795,34 @@
             <div class="create-post">
               <textarea id="postContent" class="create-post-input" placeholder="ما الذي يشغل بالك؟"></textarea>
               <div class="create-post-buttons">
-                <button class="btn btn-primary" onclick="createPost()">نشر</button>
+                <button class="btn btn-primary" onclick="document.getElementById('postImage').click()"><i class="fas fa-image"></i> صورة</button>
+                <button class="btn btn-primary" onclick="createPost()"><i class="fas fa-paper-plane"></i> نشر</button>
               </div>
+              <input type="file" id="postImage" class="file-input" accept="image/*">
             </div>
             <div id="postsFeed"></div>
           </div>
           
           <div class="sidebar">
-            <h3>المستخدمون المقترحون</h3>
+            <h3><i class="fas fa-users"></i> المستخدمون المقترحون</h3>
             <div id="suggestedUsers"></div>
           </div>
         </div>
       </div>
     </div>
     
+    <!-- Reels Page -->
+    <div id="reelsPage" class="page">
+      <div class="app-container">
+        <div style="margin-bottom: 20px;">
+          <button class="btn btn-primary" onclick="document.getElementById('reelVideo').click()" style="width: 200px;"><i class="fas fa-plus"></i> إنشاء ريل</button>
+          <input type="file" id="reelVideo" class="file-input" accept="video/*">
+        </div>
+        <div id="reelsFeed"></div>
+      </div>
+    </div>
+    
+    <!-- Messages Page -->
     <div id="messagesPage" class="page">
       <div class="app-container">
         <div style="display: grid; grid-template-columns: 300px 1fr; gap: 20px;">
@@ -768,19 +831,33 @@
             <div class="chat-messages" id="chatMessages"></div>
             <div class="chat-input">
               <input type="text" id="messageInput" placeholder="اكتب رسالة...">
-              <button onclick="sendMessage()">إرسال</button>
+              <button onclick="sendMessage()" title="إرسال"><i class="fas fa-paper-plane"></i></button>
+              <button onclick="document.getElementById('voiceInput').click()" title="رسالة صوتية"><i class="fas fa-microphone"></i></button>
+              <input type="file" id="voiceInput" class="file-input" accept="audio/*">
             </div>
           </div>
         </div>
       </div>
     </div>
     
+    <!-- Notifications Page -->
+    <div id="notificationsPage" class="page">
+      <div class="app-container">
+        <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+          <h2><i class="fas fa-bell"></i> الإشعارات</h2>
+          <div id="notificationsList" style="margin-top: 20px;"></div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Profile Page -->
     <div id="profilePage" class="page">
       <div class="app-container">
         <div class="profile-header">
           <div class="profile-avatar" id="profileAvatar">أ</div>
           <h2 id="profileName">أحمد محمد</h2>
           <p id="profileEmail">user@example.com</p>
+          <button class="btn btn-primary" onclick="editProfile()" style="width: 200px; margin-top: 15px;"><i class="fas fa-edit"></i> تعديل الملف</button>
           <div class="profile-stats">
             <div class="stat">
               <div class="stat-number" id="postsCount">0</div>
@@ -796,8 +873,70 @@
             </div>
           </div>
         </div>
+        
+        <div class="profile-info">
+          <h3><i class="fas fa-info-circle"></i> معلومات الملف</h3>
+          <div class="profile-info-item">
+            <div class="profile-info-label">المدينة</div>
+            <div class="profile-info-value" id="profileCity">لم يتم تحديده</div>
+          </div>
+          <div class="profile-info-item">
+            <div class="profile-info-label">البلد</div>
+            <div class="profile-info-value" id="profileCountry">لم يتم تحديده</div>
+          </div>
+          <div class="profile-info-item">
+            <div class="profile-info-label">الطول</div>
+            <div class="profile-info-value" id="profileHeight">لم يتم تحديده</div>
+          </div>
+          <div class="profile-info-item">
+            <div class="profile-info-label">السيرة الذاتية</div>
+            <div class="profile-info-value" id="profileBio">لم يتم تحديده</div>
+          </div>
+          <div class="profile-info-item">
+            <div class="profile-info-label">الهوايات</div>
+            <div class="profile-info-value" id="profileHobbies">لم يتم تحديده</div>
+          </div>
+        </div>
+        
         <div id="userPosts"></div>
       </div>
+    </div>
+  </div>
+
+  <!-- Edit Profile Modal -->
+  <div id="editProfileModal" class="modal">
+    <div class="modal-content">
+      <h2><i class="fas fa-user-edit"></i> تعديل الملف الشخصي</h2>
+      <form onsubmit="saveProfile(event)">
+        <div class="form-group">
+          <label>الاسم</label>
+          <input type="text" id="editName" required>
+        </div>
+        <div class="form-group">
+          <label>المدينة</label>
+          <input type="text" id="editCity">
+        </div>
+        <div class="form-group">
+          <label>البلد</label>
+          <input type="text" id="editCountry">
+        </div>
+        <div class="form-group">
+          <label>الطول (سم)</label>
+          <input type="number" id="editHeight">
+        </div>
+        <div class="form-group">
+          <label>السيرة الذاتية</label>
+          <textarea id="editBio" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; min-height: 80px;"></textarea>
+        </div>
+        <div class="form-group">
+          <label>الهوايات</label>
+          <input type="text" id="editHobbies" placeholder="مثال: القراءة، السباحة، البرمجة">
+        </div>
+        <div class="modal-buttons">
+          <button type="button" class="btn-reject" onclick="closeEditProfile()"><i class="fas fa-times"></i> إلغاء</button>
+          <button type="submit" class="btn-accept"><i class="fas fa-save"></i> حفظ</button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -821,9 +960,9 @@
     const storage = firebase.storage();
 
     let currentUser = null;
-    let termsAccepted = false;
     let tempAuthData = null;
     let selectedChatUser = null;
+    let selectedImage = null;
 
     // Check authentication state
     auth.onAuthStateChanged(user => {
@@ -837,6 +976,14 @@
         showLogin();
       }
     });
+
+    function showNotification(message, type = 'success') {
+      const notif = document.createElement('div');
+      notif.className = `notification ${type}`;
+      notif.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i> ${message}`;
+      document.body.appendChild(notif);
+      setTimeout(() => notif.remove(), 3000);
+    }
 
     function showLogin() {
       document.getElementById('loginPage').classList.add('show');
@@ -861,21 +1008,45 @@
 
     function showHome() {
       document.getElementById('homePage').classList.add('show');
+      document.getElementById('reelsPage').classList.remove('show');
       document.getElementById('messagesPage').classList.remove('show');
+      document.getElementById('notificationsPage').classList.remove('show');
       document.getElementById('profilePage').classList.remove('show');
       loadPosts();
     }
 
+    function showReels() {
+      document.getElementById('homePage').classList.remove('show');
+      document.getElementById('reelsPage').classList.add('show');
+      document.getElementById('messagesPage').classList.remove('show');
+      document.getElementById('notificationsPage').classList.remove('show');
+      document.getElementById('profilePage').classList.remove('show');
+      loadReels();
+    }
+
     function showMessages() {
       document.getElementById('homePage').classList.remove('show');
+      document.getElementById('reelsPage').classList.remove('show');
       document.getElementById('messagesPage').classList.add('show');
+      document.getElementById('notificationsPage').classList.remove('show');
       document.getElementById('profilePage').classList.remove('show');
       loadMessages();
     }
 
+    function showNotifications() {
+      document.getElementById('homePage').classList.remove('show');
+      document.getElementById('reelsPage').classList.remove('show');
+      document.getElementById('messagesPage').classList.remove('show');
+      document.getElementById('notificationsPage').classList.add('show');
+      document.getElementById('profilePage').classList.remove('show');
+      loadNotifications();
+    }
+
     function showProfile() {
       document.getElementById('homePage').classList.remove('show');
+      document.getElementById('reelsPage').classList.remove('show');
       document.getElementById('messagesPage').classList.remove('show');
+      document.getElementById('notificationsPage').classList.remove('show');
       document.getElementById('profilePage').classList.add('show');
       loadUserProfile();
     }
@@ -888,11 +1059,11 @@
       auth.signInWithEmailAndPassword(email, password)
         .then(result => {
           currentUser = result.user;
+          showNotification('تم تسجيل الدخول بنجاح!', 'success');
           showApp();
         })
         .catch(error => {
-          document.getElementById('loginError').textContent = 'البريد أو كلمة المرور غير صحيحة';
-          document.getElementById('loginError').classList.add('show');
+          showNotification('البريد أو كلمة المرور غير صحيحة', 'error');
         });
     }
 
@@ -904,7 +1075,7 @@
       const confirmPassword = document.getElementById('confirmPassword').value;
 
       if (password !== confirmPassword) {
-        alert('كلمات المرور غير متطابقة');
+        showNotification('كلمات المرور غير متطابقة', 'error');
         return;
       }
 
@@ -924,10 +1095,11 @@
             createdAt: new Date().toISOString()
           });
           document.getElementById('termsModal').classList.remove('show');
+          showNotification('تم إنشاء الحساب بنجاح!', 'success');
           showApp();
         })
         .catch(error => {
-          alert('خطأ في التسجيل: ' + error.message);
+          showNotification('خطأ في التسجيل: ' + error.message, 'error');
         });
     }
 
@@ -939,6 +1111,7 @@
     function logout() {
       auth.signOut().then(() => {
         currentUser = null;
+        showNotification('تم تسجيل الخروج', 'info');
         showLogin();
       });
     }
@@ -946,7 +1119,7 @@
     function createPost() {
       const content = document.getElementById('postContent').value;
       if (!content.trim()) {
-        alert('الرجاء كتابة شيء');
+        showNotification('الرجاء كتابة شيء', 'error');
         return;
       }
 
@@ -960,6 +1133,7 @@
       });
 
       document.getElementById('postContent').value = '';
+      showNotification('تم نشر المنشور بنجاح!', 'success');
       loadPosts();
     }
 
@@ -991,15 +1165,15 @@
             </div>
             <div class="post-content">${post.content}</div>
             <div class="post-actions">
-              <button class="action-btn" onclick="likePost('${post.id}')">❤️ إعجاب (${post.likes || 0})</button>
-              <button class="action-btn" onclick="toggleComments('${post.id}')">💬 تعليق</button>
-              <button class="action-btn">📤 مشاركة</button>
+              <button class="action-btn" onclick="likePost('${post.id}')"><i class="fas fa-heart"></i> إعجاب (${post.likes || 0})</button>
+              <button class="action-btn" onclick="toggleComments('${post.id}')"><i class="fas fa-comment"></i> تعليق</button>
+              <button class="action-btn" onclick="sharePost('${post.id}')"><i class="fas fa-share"></i> مشاركة</button>
             </div>
             <div id="comments-${post.id}" style="display:none;" class="comments-section">
               <div id="commentsList-${post.id}"></div>
               <div class="comment-input">
                 <input type="text" id="commentInput-${post.id}" placeholder="أضف تعليق...">
-                <button onclick="addComment('${post.id}')">إرسال</button>
+                <button onclick="addComment('${post.id}')"><i class="fas fa-paper-plane"></i> إرسال</button>
               </div>
             </div>
           `;
@@ -1014,12 +1188,14 @@
         db.ref('posts/' + postId).update({
           likes: (post.likes || 0) + 1
         });
+        showNotification('تم الإعجاب بالمنشور!', 'success');
       });
     }
 
     function toggleComments(postId) {
       const el = document.getElementById('comments-' + postId);
       el.style.display = el.style.display === 'none' ? 'block' : 'none';
+      loadComments(postId);
     }
 
     function addComment(postId) {
@@ -1037,6 +1213,7 @@
 
       document.getElementById('commentInput-' + postId).value = '';
       loadComments(postId);
+      showNotification('تم إضافة التعليق!', 'success');
     }
 
     function loadComments(postId) {
@@ -1056,19 +1233,13 @@
       });
     }
 
-    function loadUserProfile() {
-      if (!currentUser) return;
+    function sharePost(postId) {
+      showNotification('تم مشاركة المنشور!', 'success');
+    }
 
-      db.ref('users/' + currentUser.uid).once('value', snapshot => {
-        const user = snapshot.val();
-        document.getElementById('profileName').textContent = user.name;
-        document.getElementById('profileEmail').textContent = currentUser.email;
-        document.getElementById('profileAvatar').textContent = user.name.charAt(0);
-      });
-
-      db.ref('posts').orderByChild('userId').equalTo(currentUser.uid).on('value', snapshot => {
-        document.getElementById('postsCount').textContent = snapshot.numChildren();
-      });
+    function loadReels() {
+      const feed = document.getElementById('reelsFeed');
+      feed.innerHTML = '<p style="text-align: center; color: #999; padding: 40px;">لا توجد ريلزات حتى الآن</p>';
     }
 
     function loadMessages() {
@@ -1089,6 +1260,64 @@
       });
 
       document.getElementById('messageInput').value = '';
+      showNotification('تم إرسال الرسالة!', 'success');
+    }
+
+    function loadNotifications() {
+      const list = document.getElementById('notificationsList');
+      list.innerHTML = '<p style="text-align: center; color: #999; padding: 40px;">لا توجد إشعارات جديدة</p>';
+    }
+
+    function loadUserProfile() {
+      if (!currentUser) return;
+
+      db.ref('users/' + currentUser.uid).once('value', snapshot => {
+        const user = snapshot.val();
+        document.getElementById('profileName').textContent = user.name;
+        document.getElementById('profileEmail').textContent = currentUser.email;
+        document.getElementById('profileAvatar').textContent = user.name.charAt(0);
+        document.getElementById('profileCity').textContent = user.city || 'لم يتم تحديده';
+        document.getElementById('profileCountry').textContent = user.country || 'لم يتم تحديده';
+        document.getElementById('profileHeight').textContent = user.height ? user.height + ' سم' : 'لم يتم تحديده';
+        document.getElementById('profileBio').textContent = user.bio || 'لم يتم تحديده';
+        document.getElementById('profileHobbies').textContent = user.hobbies || 'لم يتم تحديده';
+      });
+
+      db.ref('posts').orderByChild('userId').equalTo(currentUser.uid).on('value', snapshot => {
+        document.getElementById('postsCount').textContent = snapshot.numChildren();
+      });
+    }
+
+    function editProfile() {
+      db.ref('users/' + currentUser.uid).once('value', snapshot => {
+        const user = snapshot.val();
+        document.getElementById('editName').value = user.name;
+        document.getElementById('editCity').value = user.city || '';
+        document.getElementById('editCountry').value = user.country || '';
+        document.getElementById('editHeight').value = user.height || '';
+        document.getElementById('editBio').value = user.bio || '';
+        document.getElementById('editHobbies').value = user.hobbies || '';
+        document.getElementById('editProfileModal').classList.add('show');
+      });
+    }
+
+    function saveProfile(e) {
+      e.preventDefault();
+      db.ref('users/' + currentUser.uid).update({
+        name: document.getElementById('editName').value,
+        city: document.getElementById('editCity').value,
+        country: document.getElementById('editCountry').value,
+        height: document.getElementById('editHeight').value,
+        bio: document.getElementById('editBio').value,
+        hobbies: document.getElementById('editHobbies').value
+      });
+      closeEditProfile();
+      showNotification('تم حفظ التغييرات!', 'success');
+      loadUserProfile();
+    }
+
+    function closeEditProfile() {
+      document.getElementById('editProfileModal').classList.remove('show');
     }
   </script>
 </body>
