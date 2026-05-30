@@ -4,9 +4,353 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ASH SOCIAL - تطبيق التواصل الاجتماعي</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f0f2f5;
+      color: #333;
+    }
+    .navbar {
+      background: white;
+      padding: 15px 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: #1877f2;
+    }
+    .nav-links {
+      display: flex;
+      gap: 20px;
+    }
+    .nav-links button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      color: #333;
+      padding: 8px 12px;
+      border-radius: 4px;
+      transition: background 0.3s;
+    }
+    .nav-links button:hover {
+      background: #f0f2f5;
+    }
+    .logout-btn {
+      background: #1877f2 !important;
+      color: white !important;
+    }
+    .logout-btn:hover {
+      background: #165ec9 !important;
+    }
+    .container {
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 0 10px;
+    }
+    .login-box {
+      background: white;
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .login-title {
+      font-size: 32px;
+      color: #1877f2;
+      margin-bottom: 10px;
+    }
+    .login-subtitle {
+      color: #666;
+      margin-bottom: 30px;
+    }
+    .form-group {
+      margin-bottom: 15px;
+      text-align: right;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    .login-btn {
+      width: 100%;
+      padding: 12px;
+      background: #1877f2;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    .login-btn:hover {
+      background: #165ec9;
+    }
+    .post-card {
+      background: white;
+      padding: 20px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .post-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-left: 10px;
+    }
+    .user-info h3 {
+      font-size: 16px;
+      margin-bottom: 4px;
+    }
+    .post-time {
+      font-size: 12px;
+      color: #999;
+    }
+    .post-content {
+      margin-bottom: 15px;
+      line-height: 1.5;
+    }
+    .post-actions {
+      display: flex;
+      justify-content: space-around;
+      border-top: 1px solid #eee;
+      padding-top: 10px;
+    }
+    .action-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #666;
+      padding: 8px 16px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .action-btn:hover {
+      color: #1877f2;
+    }
+    .create-post {
+      background: white;
+      padding: 20px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .create-post textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
+      font-family: inherit;
+      resize: vertical;
+    }
+    .create-post button {
+      width: 100%;
+      padding: 10px;
+      background: #1877f2;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .create-post button:hover {
+      background: #165ec9;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
 </head>
 <body>
-  <div id="root"></div>
-  <script type="module" src="/src/main.jsx"></script>
+  <div class="navbar">
+    <h1 class="logo">ASH SOCIAL</h1>
+    <div class="nav-links">
+      <button onclick="showPage('home')">الرئيسية</button>
+      <button onclick="showPage('messages')">الرسائل</button>
+      <button onclick="showPage('profile')">الملف الشخصي</button>
+      <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
+    </div>
+  </div>
+
+  <div id="loginPage" class="container">
+    <div class="login-box">
+      <h1 class="login-title">ASH SOCIAL</h1>
+      <p class="login-subtitle">تطبيق التواصل الاجتماعي</p>
+      <form onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label>البريد الإلكتروني</label>
+          <input type="email" id="email" placeholder="أدخل بريدك الإلكتروني" required>
+        </div>
+        <div class="form-group">
+          <label>كلمة المرور</label>
+          <input type="password" id="password" placeholder="أدخل كلمة المرور" required>
+        </div>
+        <button type="submit" class="login-btn">تسجيل الدخول</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="homePage" class="container hidden">
+    <div class="create-post">
+      <form onsubmit="handleCreatePost(event)">
+        <textarea id="postContent" placeholder="ما الذي يشغل بالك؟" rows="3"></textarea>
+        <button type="submit">نشر</button>
+      </form>
+    </div>
+    <div id="postsFeed"></div>
+  </div>
+
+  <div id="messagesPage" class="container hidden">
+    <div class="post-card">
+      <h2>الرسائل</h2>
+      <p>لا توجد رسائل حتى الآن</p>
+    </div>
+  </div>
+
+  <div id="profilePage" class="container hidden">
+    <div class="post-card">
+      <h2>الملف الشخصي</h2>
+      <p>أحمد محمد</p>
+      <p>مرحباً بك في ملفي الشخصي</p>
+    </div>
+  </div>
+
+  <script>
+    let isLoggedIn = localStorage.getItem('token');
+    let posts = [
+      {
+        id: 1,
+        name: 'أحمد محمد',
+        avatar: 'https://via.placeholder.com/40',
+        content: 'مرحباً بك في ASH SOCIAL! 🎉',
+        likes: 5,
+      }
+    ];
+
+    if (isLoggedIn) {
+      document.getElementById('loginPage').classList.add('hidden');
+    } else {
+      document.getElementById('homePage').classList.add('hidden');
+      document.getElementById('messagesPage').classList.add('hidden');
+      document.getElementById('profilePage').classList.add('hidden');
+    }
+
+    function handleLogin(event) {
+      event.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      
+      if (email && password) {
+        localStorage.setItem('token', btoa(email + ':' + password));
+        localStorage.setItem('user', JSON.stringify({ email, name: email.split('@')[0] }));
+        document.getElementById('loginPage').classList.add('hidden');
+        document.getElementById('homePage').classList.remove('hidden');
+        renderPosts();
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      document.getElementById('loginPage').classList.remove('hidden');
+      document.getElementById('homePage').classList.add('hidden');
+      document.getElementById('messagesPage').classList.add('hidden');
+      document.getElementById('profilePage').classList.add('hidden');
+      document.getElementById('email').value = '';
+      document.getElementById('password').value = '';
+    }
+
+    function showPage(page) {
+      document.getElementById('homePage').classList.add('hidden');
+      document.getElementById('messagesPage').classList.add('hidden');
+      document.getElementById('profilePage').classList.add('hidden');
+      
+      if (page === 'home') {
+        document.getElementById('homePage').classList.remove('hidden');
+        renderPosts();
+      } else if (page === 'messages') {
+        document.getElementById('messagesPage').classList.remove('hidden');
+      } else if (page === 'profile') {
+        document.getElementById('profilePage').classList.remove('hidden');
+      }
+    }
+
+    function handleCreatePost(event) {
+      event.preventDefault();
+      const content = document.getElementById('postContent').value;
+      
+      if (content.trim()) {
+        posts.unshift({
+          id: posts.length + 1,
+          name: 'أنت',
+          avatar: 'https://via.placeholder.com/40',
+          content: content,
+          likes: 0,
+        });
+        document.getElementById('postContent').value = '';
+        renderPosts();
+      }
+    }
+
+    function renderPosts() {
+      const feed = document.getElementById('postsFeed');
+      feed.innerHTML = posts.map(post => `
+        <div class="post-card">
+          <div class="post-header">
+            <img src="${post.avatar}" alt="${post.name}" class="avatar">
+            <div class="user-info">
+              <h3>${post.name}</h3>
+              <p class="post-time">الآن</p>
+            </div>
+          </div>
+          <div class="post-content">
+            <p>${post.content}</p>
+          </div>
+          <div class="post-actions">
+            <button class="action-btn" onclick="likePost(${post.id})">❤️ إعجاب (${post.likes})</button>
+            <button class="action-btn">💬 تعليق</button>
+            <button class="action-btn">📤 مشاركة</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function likePost(postId) {
+      const post = posts.find(p => p.id === postId);
+      if (post) {
+        post.likes++;
+        renderPosts();
+      }
+    }
+  </script>
 </body>
 </html>
