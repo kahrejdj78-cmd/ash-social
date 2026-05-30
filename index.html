@@ -7,7 +7,6 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     * {
@@ -104,9 +103,14 @@
       color: white;
     }
     
-    .btn-primary:hover {
+    .btn-primary:hover:not(:disabled) {
       transform: translateY(-2px);
       box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
     }
     
     .error-message {
@@ -117,6 +121,17 @@
     }
     
     .error-message.show {
+      display: block;
+    }
+    
+    .success-message {
+      color: #27ae60;
+      font-size: 13px;
+      margin-top: 5px;
+      display: none;
+    }
+    
+    .success-message.show {
       display: block;
     }
     
@@ -131,7 +146,6 @@
       z-index: 1000;
       align-items: center;
       justify-content: center;
-      overflow-y: auto;
     }
     
     .modal.show {
@@ -142,11 +156,10 @@
       background: white;
       border-radius: 16px;
       max-width: 500px;
-      max-height: 80vh;
-      overflow-y: auto;
       padding: 30px;
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-      margin: 20px;
+      max-height: 80vh;
+      overflow-y: auto;
     }
     
     .modal-content h2 {
@@ -247,12 +260,6 @@
       padding: 20px;
     }
     
-    .two-column {
-      display: grid;
-      grid-template-columns: 1fr 300px;
-      gap: 20px;
-    }
-    
     .post-card {
       background: white;
       padding: 20px;
@@ -293,14 +300,6 @@
       color: #333;
     }
     
-    .post-image {
-      width: 100%;
-      border-radius: 8px;
-      margin-bottom: 15px;
-      max-height: 400px;
-      object-fit: cover;
-    }
-    
     .post-actions {
       display: flex;
       justify-content: space-around;
@@ -325,10 +324,6 @@
     
     .action-btn:hover {
       color: #667eea;
-    }
-    
-    .action-btn.liked {
-      color: #e74c3c;
     }
     
     .create-post {
@@ -366,80 +361,35 @@
       transition: all 0.3s;
     }
     
-    .sidebar {
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
       background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      height: fit-content;
-      position: sticky;
-      top: 80px;
-    }
-    
-    .sidebar h3 {
-      color: #333;
-      margin-bottom: 15px;
-      font-size: 16px;
-    }
-    
-    .sidebar-item {
-      padding: 10px;
-      margin-bottom: 10px;
+      padding: 16px 20px;
       border-radius: 8px;
-      cursor: pointer;
-      transition: background 0.3s;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 2000;
+      animation: slideIn 0.3s ease-out;
     }
     
-    .sidebar-item:hover {
-      background: #f0f0f0;
+    @keyframes slideIn {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
     }
     
-    .comments-section {
-      margin-top: 15px;
-      padding-top: 15px;
-      border-top: 1px solid #eee;
+    .notification.success {
+      border-left: 4px solid #27ae60;
     }
     
-    .comment {
-      margin-bottom: 10px;
-      padding: 10px;
-      background: #f9f9f9;
-      border-radius: 8px;
-      font-size: 13px;
-    }
-    
-    .comment-author {
-      font-weight: 600;
-      color: #333;
-    }
-    
-    .comment-text {
-      color: #666;
-      margin-top: 5px;
-    }
-    
-    .comment-input {
-      display: flex;
-      gap: 10px;
-      margin-top: 10px;
-    }
-    
-    .comment-input input {
-      flex: 1;
-      padding: 8px 12px;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      font-size: 13px;
-    }
-    
-    .comment-input button {
-      padding: 8px 16px;
-      background: #667eea;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 13px;
+    .notification.error {
+      border-left: 4px solid #e74c3c;
     }
     
     .profile-header {
@@ -487,203 +437,10 @@
       font-size: 12px;
       color: #999;
     }
-    
-    .messages-list {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      overflow: hidden;
-      max-height: 500px;
-      overflow-y: auto;
-    }
-    
-    .message-item {
-      padding: 15px;
-      border-bottom: 1px solid #eee;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    
-    .message-item:hover {
-      background: #f9f9f9;
-    }
-    
-    .message-item.active {
-      background: #f0f2f5;
-    }
-    
-    .chat-window {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      display: flex;
-      flex-direction: column;
-      height: 500px;
-    }
-    
-    .chat-messages {
-      flex: 1;
-      overflow-y: auto;
-      padding: 20px;
-    }
-    
-    .message-bubble {
-      margin-bottom: 15px;
-      display: flex;
-      gap: 10px;
-    }
-    
-    .message-bubble.sent {
-      justify-content: flex-end;
-    }
-    
-    .message-bubble-content {
-      background: #667eea;
-      color: white;
-      padding: 10px 15px;
-      border-radius: 12px;
-      max-width: 70%;
-      word-wrap: break-word;
-    }
-    
-    .message-bubble.received .message-bubble-content {
-      background: #f0f0f0;
-      color: #333;
-    }
-    
-    .chat-input {
-      padding: 15px;
-      border-top: 1px solid #eee;
-      display: flex;
-      gap: 10px;
-    }
-    
-    .chat-input input {
-      flex: 1;
-      padding: 10px 15px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      font-size: 14px;
-    }
-    
-    .chat-input button {
-      padding: 10px 20px;
-      background: #667eea;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-    }
-    
-    .notification {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: white;
-      padding: 16px 20px;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      z-index: 2000;
-      animation: slideIn 0.3s ease-out;
-    }
-    
-    @keyframes slideIn {
-      from {
-        transform: translateX(400px);
-        opacity: 0;
-      }
-      to {
-        transform: translateX(0);
-        opacity: 1;
-      }
-    }
-    
-    .notification.success {
-      border-left: 4px solid #27ae60;
-    }
-    
-    .notification.error {
-      border-left: 4px solid #e74c3c;
-    }
-    
-    .notification.info {
-      border-left: 4px solid #3498db;
-    }
-    
-    @media (max-width: 768px) {
-      .two-column {
-        grid-template-columns: 1fr;
-      }
-      
-      .sidebar {
-        display: none;
-      }
-    }
-    
-    .file-input {
-      display: none;
-    }
-    
-    .profile-info {
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    
-    .profile-info h3 {
-      color: #333;
-      margin-bottom: 15px;
-      font-size: 16px;
-    }
-    
-    .profile-info-item {
-      margin-bottom: 12px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid #eee;
-    }
-    
-    .profile-info-item:last-child {
-      border-bottom: none;
-    }
-    
-    .profile-info-label {
-      color: #999;
-      font-size: 12px;
-      font-weight: 600;
-      text-transform: uppercase;
-    }
-    
-    .profile-info-value {
-      color: #333;
-      font-size: 14px;
-      margin-top: 4px;
-    }
-    
-    .reel-card {
-      background: white;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      margin-bottom: 15px;
-    }
-    
-    .reel-video {
-      width: 100%;
-      height: 300px;
-      background: #000;
-      border-radius: 8px;
-    }
-    
-    .reel-info {
-      padding: 15px;
-    }
   </style>
 </head>
 <body>
-  <!-- Auth Pages -->
+  <!-- Login Page -->
   <div id="loginPage" class="page show">
     <div class="auth-container">
       <div class="auth-card">
@@ -704,7 +461,9 @@
             <input type="password" id="loginPassword" placeholder="••••••••" required>
           </div>
           
-          <button type="submit" class="btn btn-primary"><i class="fas fa-sign-in-alt"></i> دخول</button>
+          <button type="submit" class="btn btn-primary" id="loginBtn">
+            <i class="fas fa-sign-in-alt"></i> دخول
+          </button>
         </form>
         
         <div style="text-align: center; margin-top: 20px; color: #999; font-size: 13px;">
@@ -744,7 +503,9 @@
             <input type="password" id="confirmPassword" placeholder="••••••••" required>
           </div>
           
-          <button type="submit" class="btn btn-primary"><i class="fas fa-user-plus"></i> إنشاء حساب</button>
+          <button type="submit" class="btn btn-primary" id="registerBtn">
+            <i class="fas fa-user-plus"></i> إنشاء حساب
+          </button>
         </form>
         
         <div style="text-align: center; margin-top: 20px; color: #999; font-size: 13px;">
@@ -773,15 +534,12 @@
     </div>
   </div>
   
-  <!-- App Pages -->
+  <!-- App Page -->
   <div id="appPage" class="page">
     <div class="app-navbar">
       <div class="app-navbar-logo"><i class="fas fa-share-alt"></i> ASH SOCIAL</div>
       <div class="app-navbar-links">
         <button onclick="showHome()" title="الرئيسية"><i class="fas fa-home"></i> الرئيسية</button>
-        <button onclick="showReels()" title="الريلزات"><i class="fas fa-video"></i> الريلزات</button>
-        <button onclick="showMessages()" title="الرسائل"><i class="fas fa-envelope"></i> الرسائل</button>
-        <button onclick="showNotifications()" title="الإشعارات"><i class="fas fa-bell"></i> <span id="notifBadge" style="display:none; background: #e74c3c; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px;">0</span></button>
         <button onclick="showProfile()" title="ملفي"><i class="fas fa-user"></i> ملفي</button>
         <button class="logout-btn" onclick="logout()" title="تسجيل الخروج"><i class="fas fa-sign-out-alt"></i> خروج</button>
       </div>
@@ -790,63 +548,13 @@
     <!-- Home Page -->
     <div id="homePage" class="page show">
       <div class="app-container">
-        <div class="two-column">
-          <div>
-            <div class="create-post">
-              <textarea id="postContent" class="create-post-input" placeholder="ما الذي يشغل بالك؟"></textarea>
-              <div class="create-post-buttons">
-                <button class="btn btn-primary" onclick="document.getElementById('postImage').click()"><i class="fas fa-image"></i> صورة</button>
-                <button class="btn btn-primary" onclick="createPost()"><i class="fas fa-paper-plane"></i> نشر</button>
-              </div>
-              <input type="file" id="postImage" class="file-input" accept="image/*">
-            </div>
-            <div id="postsFeed"></div>
-          </div>
-          
-          <div class="sidebar">
-            <h3><i class="fas fa-users"></i> المستخدمون المقترحون</h3>
-            <div id="suggestedUsers"></div>
+        <div class="create-post">
+          <textarea id="postContent" class="create-post-input" placeholder="ما الذي يشغل بالك؟"></textarea>
+          <div class="create-post-buttons">
+            <button class="btn btn-primary" onclick="createPost()"><i class="fas fa-paper-plane"></i> نشر</button>
           </div>
         </div>
-      </div>
-    </div>
-    
-    <!-- Reels Page -->
-    <div id="reelsPage" class="page">
-      <div class="app-container">
-        <div style="margin-bottom: 20px;">
-          <button class="btn btn-primary" onclick="document.getElementById('reelVideo').click()" style="width: 200px;"><i class="fas fa-plus"></i> إنشاء ريل</button>
-          <input type="file" id="reelVideo" class="file-input" accept="video/*">
-        </div>
-        <div id="reelsFeed"></div>
-      </div>
-    </div>
-    
-    <!-- Messages Page -->
-    <div id="messagesPage" class="page">
-      <div class="app-container">
-        <div style="display: grid; grid-template-columns: 300px 1fr; gap: 20px;">
-          <div class="messages-list" id="messagesList"></div>
-          <div class="chat-window">
-            <div class="chat-messages" id="chatMessages"></div>
-            <div class="chat-input">
-              <input type="text" id="messageInput" placeholder="اكتب رسالة...">
-              <button onclick="sendMessage()" title="إرسال"><i class="fas fa-paper-plane"></i></button>
-              <button onclick="document.getElementById('voiceInput').click()" title="رسالة صوتية"><i class="fas fa-microphone"></i></button>
-              <input type="file" id="voiceInput" class="file-input" accept="audio/*">
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Notifications Page -->
-    <div id="notificationsPage" class="page">
-      <div class="app-container">
-        <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-          <h2><i class="fas fa-bell"></i> الإشعارات</h2>
-          <div id="notificationsList" style="margin-top: 20px;"></div>
-        </div>
+        <div id="postsFeed"></div>
       </div>
     </div>
     
@@ -857,7 +565,6 @@
           <div class="profile-avatar" id="profileAvatar">أ</div>
           <h2 id="profileName">أحمد محمد</h2>
           <p id="profileEmail">user@example.com</p>
-          <button class="btn btn-primary" onclick="editProfile()" style="width: 200px; margin-top: 15px;"><i class="fas fa-edit"></i> تعديل الملف</button>
           <div class="profile-stats">
             <div class="stat">
               <div class="stat-number" id="postsCount">0</div>
@@ -867,76 +574,10 @@
               <div class="stat-number" id="followersCount">0</div>
               <div class="stat-label">متابعون</div>
             </div>
-            <div class="stat">
-              <div class="stat-number" id="followingCount">0</div>
-              <div class="stat-label">يتابع</div>
-            </div>
           </div>
         </div>
-        
-        <div class="profile-info">
-          <h3><i class="fas fa-info-circle"></i> معلومات الملف</h3>
-          <div class="profile-info-item">
-            <div class="profile-info-label">المدينة</div>
-            <div class="profile-info-value" id="profileCity">لم يتم تحديده</div>
-          </div>
-          <div class="profile-info-item">
-            <div class="profile-info-label">البلد</div>
-            <div class="profile-info-value" id="profileCountry">لم يتم تحديده</div>
-          </div>
-          <div class="profile-info-item">
-            <div class="profile-info-label">الطول</div>
-            <div class="profile-info-value" id="profileHeight">لم يتم تحديده</div>
-          </div>
-          <div class="profile-info-item">
-            <div class="profile-info-label">السيرة الذاتية</div>
-            <div class="profile-info-value" id="profileBio">لم يتم تحديده</div>
-          </div>
-          <div class="profile-info-item">
-            <div class="profile-info-label">الهوايات</div>
-            <div class="profile-info-value" id="profileHobbies">لم يتم تحديده</div>
-          </div>
-        </div>
-        
         <div id="userPosts"></div>
       </div>
-    </div>
-  </div>
-
-  <!-- Edit Profile Modal -->
-  <div id="editProfileModal" class="modal">
-    <div class="modal-content">
-      <h2><i class="fas fa-user-edit"></i> تعديل الملف الشخصي</h2>
-      <form onsubmit="saveProfile(event)">
-        <div class="form-group">
-          <label>الاسم</label>
-          <input type="text" id="editName" required>
-        </div>
-        <div class="form-group">
-          <label>المدينة</label>
-          <input type="text" id="editCity">
-        </div>
-        <div class="form-group">
-          <label>البلد</label>
-          <input type="text" id="editCountry">
-        </div>
-        <div class="form-group">
-          <label>الطول (سم)</label>
-          <input type="number" id="editHeight">
-        </div>
-        <div class="form-group">
-          <label>السيرة الذاتية</label>
-          <textarea id="editBio" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; min-height: 80px;"></textarea>
-        </div>
-        <div class="form-group">
-          <label>الهوايات</label>
-          <input type="text" id="editHobbies" placeholder="مثال: القراءة، السباحة، البرمجة">
-        </div>
-        <div class="modal-buttons">
-          <button type="button" class="btn-reject" onclick="closeEditProfile()"><i class="fas fa-times"></i> إلغاء</button>
-          <button type="submit" class="btn-accept"><i class="fas fa-save"></i> حفظ</button>
-        </div>
-      </form>
     </div>
   </div>
 
@@ -957,15 +598,13 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.database();
-    const storage = firebase.storage();
 
     let currentUser = null;
     let tempAuthData = null;
-    let selectedChatUser = null;
-    let selectedImage = null;
 
     // Check authentication state
     auth.onAuthStateChanged(user => {
+      console.log("Auth state changed:", user);
       if (user) {
         currentUser = user;
         showApp();
@@ -980,7 +619,7 @@
     function showNotification(message, type = 'success') {
       const notif = document.createElement('div');
       notif.className = `notification ${type}`;
-      notif.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i> ${message}`;
+      notif.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
       document.body.appendChild(notif);
       setTimeout(() => notif.remove(), 3000);
     }
@@ -1008,45 +647,12 @@
 
     function showHome() {
       document.getElementById('homePage').classList.add('show');
-      document.getElementById('reelsPage').classList.remove('show');
-      document.getElementById('messagesPage').classList.remove('show');
-      document.getElementById('notificationsPage').classList.remove('show');
       document.getElementById('profilePage').classList.remove('show');
       loadPosts();
     }
 
-    function showReels() {
-      document.getElementById('homePage').classList.remove('show');
-      document.getElementById('reelsPage').classList.add('show');
-      document.getElementById('messagesPage').classList.remove('show');
-      document.getElementById('notificationsPage').classList.remove('show');
-      document.getElementById('profilePage').classList.remove('show');
-      loadReels();
-    }
-
-    function showMessages() {
-      document.getElementById('homePage').classList.remove('show');
-      document.getElementById('reelsPage').classList.remove('show');
-      document.getElementById('messagesPage').classList.add('show');
-      document.getElementById('notificationsPage').classList.remove('show');
-      document.getElementById('profilePage').classList.remove('show');
-      loadMessages();
-    }
-
-    function showNotifications() {
-      document.getElementById('homePage').classList.remove('show');
-      document.getElementById('reelsPage').classList.remove('show');
-      document.getElementById('messagesPage').classList.remove('show');
-      document.getElementById('notificationsPage').classList.add('show');
-      document.getElementById('profilePage').classList.remove('show');
-      loadNotifications();
-    }
-
     function showProfile() {
       document.getElementById('homePage').classList.remove('show');
-      document.getElementById('reelsPage').classList.remove('show');
-      document.getElementById('messagesPage').classList.remove('show');
-      document.getElementById('notificationsPage').classList.remove('show');
       document.getElementById('profilePage').classList.add('show');
       loadUserProfile();
     }
@@ -1055,15 +661,35 @@
       e.preventDefault();
       const email = document.getElementById('loginEmail').value;
       const password = document.getElementById('loginPassword').value;
+      const loginBtn = document.getElementById('loginBtn');
+      const errorEl = document.getElementById('loginError');
+
+      loginBtn.disabled = true;
+      errorEl.classList.remove('show');
 
       auth.signInWithEmailAndPassword(email, password)
         .then(result => {
           currentUser = result.user;
           showNotification('تم تسجيل الدخول بنجاح!', 'success');
           showApp();
+          document.getElementById('loginForm').reset();
         })
         .catch(error => {
-          showNotification('البريد أو كلمة المرور غير صحيحة', 'error');
+          console.error("Login error:", error);
+          let errorMsg = 'خطأ في تسجيل الدخول';
+          if (error.code === 'auth/user-not-found') {
+            errorMsg = 'البريد الإلكتروني غير مسجل';
+          } else if (error.code === 'auth/wrong-password') {
+            errorMsg = 'كلمة المرور غير صحيحة';
+          } else if (error.code === 'auth/invalid-email') {
+            errorMsg = 'البريد الإلكتروني غير صحيح';
+          }
+          errorEl.textContent = errorMsg;
+          errorEl.classList.add('show');
+          showNotification(errorMsg, 'error');
+        })
+        .finally(() => {
+          loginBtn.disabled = false;
         });
     }
 
@@ -1079,12 +705,20 @@
         return;
       }
 
+      if (password.length < 6) {
+        showNotification('كلمة المرور يجب أن تكون 6 أحرف على الأقل', 'error');
+        return;
+      }
+
       tempAuthData = { fullName, email, password };
       document.getElementById('termsModal').classList.add('show');
     }
 
     function acceptTerms() {
       if (!tempAuthData) return;
+
+      const registerBtn = document.getElementById('registerBtn');
+      registerBtn.disabled = true;
 
       auth.createUserWithEmailAndPassword(tempAuthData.email, tempAuthData.password)
         .then(result => {
@@ -1097,9 +731,20 @@
           document.getElementById('termsModal').classList.remove('show');
           showNotification('تم إنشاء الحساب بنجاح!', 'success');
           showApp();
+          document.getElementById('registerForm').reset();
         })
         .catch(error => {
-          showNotification('خطأ في التسجيل: ' + error.message, 'error');
+          console.error("Registration error:", error);
+          let errorMsg = 'خطأ في التسجيل';
+          if (error.code === 'auth/email-already-in-use') {
+            errorMsg = 'البريد الإلكتروني مسجل بالفعل';
+          } else if (error.code === 'auth/weak-password') {
+            errorMsg = 'كلمة المرور ضعيفة جداً';
+          }
+          showNotification(errorMsg, 'error');
+        })
+        .finally(() => {
+          registerBtn.disabled = false;
         });
     }
 
@@ -1111,7 +756,7 @@
     function logout() {
       auth.signOut().then(() => {
         currentUser = null;
-        showNotification('تم تسجيل الخروج', 'info');
+        showNotification('تم تسجيل الخروج', 'success');
         showLogin();
       });
     }
@@ -1126,15 +771,18 @@
       const postId = db.ref('posts').push().key;
       db.ref('posts/' + postId).set({
         userId: currentUser.uid,
-        userName: currentUser.displayName || 'مستخدم',
+        userName: currentUser.email.split('@')[0],
         content: content,
         likes: 0,
         createdAt: new Date().toISOString()
+      }).then(() => {
+        document.getElementById('postContent').value = '';
+        showNotification('تم نشر المنشور بنجاح!', 'success');
+        loadPosts();
+      }).catch(error => {
+        console.error("Post error:", error);
+        showNotification('خطأ في نشر المنشور', 'error');
       });
-
-      document.getElementById('postContent').value = '';
-      showNotification('تم نشر المنشور بنجاح!', 'success');
-      loadPosts();
     }
 
     function loadPosts() {
@@ -1150,13 +798,18 @@
           });
         });
 
+        if (posts.length === 0) {
+          feed.innerHTML = '<p style="text-align: center; color: #999; padding: 40px;">لا توجد منشورات حتى الآن</p>';
+          return;
+        }
+
         posts.forEach(post => {
           const postEl = document.createElement('div');
           postEl.className = 'post-card';
           postEl.innerHTML = `
             <div class="post-header">
               <div class="post-user">
-                <div class="avatar">${post.userName.charAt(0)}</div>
+                <div class="avatar">${post.userName.charAt(0).toUpperCase()}</div>
                 <div>
                   <strong>${post.userName}</strong>
                   <p style="font-size: 12px; color: #999;">الآن</p>
@@ -1166,19 +819,14 @@
             <div class="post-content">${post.content}</div>
             <div class="post-actions">
               <button class="action-btn" onclick="likePost('${post.id}')"><i class="fas fa-heart"></i> إعجاب (${post.likes || 0})</button>
-              <button class="action-btn" onclick="toggleComments('${post.id}')"><i class="fas fa-comment"></i> تعليق</button>
-              <button class="action-btn" onclick="sharePost('${post.id}')"><i class="fas fa-share"></i> مشاركة</button>
-            </div>
-            <div id="comments-${post.id}" style="display:none;" class="comments-section">
-              <div id="commentsList-${post.id}"></div>
-              <div class="comment-input">
-                <input type="text" id="commentInput-${post.id}" placeholder="أضف تعليق...">
-                <button onclick="addComment('${post.id}')"><i class="fas fa-paper-plane"></i> إرسال</button>
-              </div>
+              <button class="action-btn"><i class="fas fa-comment"></i> تعليق</button>
+              <button class="action-btn"><i class="fas fa-share"></i> مشاركة</button>
             </div>
           `;
           feed.appendChild(postEl);
         });
+      }, error => {
+        console.error("Load posts error:", error);
       });
     }
 
@@ -1187,85 +835,11 @@
         const post = snapshot.val();
         db.ref('posts/' + postId).update({
           likes: (post.likes || 0) + 1
-        });
-        showNotification('تم الإعجاب بالمنشور!', 'success');
-      });
-    }
-
-    function toggleComments(postId) {
-      const el = document.getElementById('comments-' + postId);
-      el.style.display = el.style.display === 'none' ? 'block' : 'none';
-      loadComments(postId);
-    }
-
-    function addComment(postId) {
-      const text = document.getElementById('commentInput-' + postId).value;
-      if (!text.trim()) return;
-
-      const commentId = db.ref('comments').push().key;
-      db.ref('comments/' + commentId).set({
-        postId: postId,
-        userId: currentUser.uid,
-        userName: currentUser.displayName || 'مستخدم',
-        text: text,
-        createdAt: new Date().toISOString()
-      });
-
-      document.getElementById('commentInput-' + postId).value = '';
-      loadComments(postId);
-      showNotification('تم إضافة التعليق!', 'success');
-    }
-
-    function loadComments(postId) {
-      db.ref('comments').orderByChild('postId').equalTo(postId).on('value', snapshot => {
-        const list = document.getElementById('commentsList-' + postId);
-        list.innerHTML = '';
-
-        snapshot.forEach(comment => {
-          const commentEl = document.createElement('div');
-          commentEl.className = 'comment';
-          commentEl.innerHTML = `
-            <span class="comment-author">${comment.val().userName}</span>
-            <div class="comment-text">${comment.val().text}</div>
-          `;
-          list.appendChild(commentEl);
+        }).then(() => {
+          showNotification('تم الإعجاب بالمنشور!', 'success');
+          loadPosts();
         });
       });
-    }
-
-    function sharePost(postId) {
-      showNotification('تم مشاركة المنشور!', 'success');
-    }
-
-    function loadReels() {
-      const feed = document.getElementById('reelsFeed');
-      feed.innerHTML = '<p style="text-align: center; color: #999; padding: 40px;">لا توجد ريلزات حتى الآن</p>';
-    }
-
-    function loadMessages() {
-      const list = document.getElementById('messagesList');
-      list.innerHTML = '<p style="padding: 20px; text-align: center; color: #999;">لا توجد رسائل حتى الآن</p>';
-    }
-
-    function sendMessage() {
-      const text = document.getElementById('messageInput').value;
-      if (!text.trim()) return;
-
-      const messageId = db.ref('messages').push().key;
-      db.ref('messages/' + messageId).set({
-        senderId: currentUser.uid,
-        senderName: currentUser.displayName || 'مستخدم',
-        text: text,
-        createdAt: new Date().toISOString()
-      });
-
-      document.getElementById('messageInput').value = '';
-      showNotification('تم إرسال الرسالة!', 'success');
-    }
-
-    function loadNotifications() {
-      const list = document.getElementById('notificationsList');
-      list.innerHTML = '<p style="text-align: center; color: #999; padding: 40px;">لا توجد إشعارات جديدة</p>';
     }
 
     function loadUserProfile() {
@@ -1273,51 +847,16 @@
 
       db.ref('users/' + currentUser.uid).once('value', snapshot => {
         const user = snapshot.val();
-        document.getElementById('profileName').textContent = user.name;
-        document.getElementById('profileEmail').textContent = currentUser.email;
-        document.getElementById('profileAvatar').textContent = user.name.charAt(0);
-        document.getElementById('profileCity').textContent = user.city || 'لم يتم تحديده';
-        document.getElementById('profileCountry').textContent = user.country || 'لم يتم تحديده';
-        document.getElementById('profileHeight').textContent = user.height ? user.height + ' سم' : 'لم يتم تحديده';
-        document.getElementById('profileBio').textContent = user.bio || 'لم يتم تحديده';
-        document.getElementById('profileHobbies').textContent = user.hobbies || 'لم يتم تحديده';
+        if (user) {
+          document.getElementById('profileName').textContent = user.name;
+          document.getElementById('profileEmail').textContent = currentUser.email;
+          document.getElementById('profileAvatar').textContent = user.name.charAt(0).toUpperCase();
+        }
       });
 
-      db.ref('posts').orderByChild('userId').equalTo(currentUser.uid).on('value', snapshot => {
+      db.ref('posts').orderByChild('userId').equalTo(currentUser.uid).once('value', snapshot => {
         document.getElementById('postsCount').textContent = snapshot.numChildren();
       });
-    }
-
-    function editProfile() {
-      db.ref('users/' + currentUser.uid).once('value', snapshot => {
-        const user = snapshot.val();
-        document.getElementById('editName').value = user.name;
-        document.getElementById('editCity').value = user.city || '';
-        document.getElementById('editCountry').value = user.country || '';
-        document.getElementById('editHeight').value = user.height || '';
-        document.getElementById('editBio').value = user.bio || '';
-        document.getElementById('editHobbies').value = user.hobbies || '';
-        document.getElementById('editProfileModal').classList.add('show');
-      });
-    }
-
-    function saveProfile(e) {
-      e.preventDefault();
-      db.ref('users/' + currentUser.uid).update({
-        name: document.getElementById('editName').value,
-        city: document.getElementById('editCity').value,
-        country: document.getElementById('editCountry').value,
-        height: document.getElementById('editHeight').value,
-        bio: document.getElementById('editBio').value,
-        hobbies: document.getElementById('editHobbies').value
-      });
-      closeEditProfile();
-      showNotification('تم حفظ التغييرات!', 'success');
-      loadUserProfile();
-    }
-
-    function closeEditProfile() {
-      document.getElementById('editProfileModal').classList.remove('show');
     }
   </script>
 </body>
