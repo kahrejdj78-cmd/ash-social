@@ -3,7 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ASH SOCIAL - تطبيق التواصل الاجتماعي الجديد</title>
+  <title>ASH SOCIAL - تطبيق التواصل الاجتماعي</title>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage.js"></script>
   <style>
     * {
       margin: 0;
@@ -12,47 +16,47 @@
     }
     
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
     }
     
-    body.home-bg {
+    body.app-bg {
       background: #f0f2f5;
     }
     
-    .container {
-      width: 100%;
-      max-width: 400px;
+    .auth-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
     }
     
-    .card {
+    .auth-card {
       background: white;
       border-radius: 16px;
       padding: 40px 30px;
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 400px;
     }
     
-    .logo {
+    .logo-section {
       text-align: center;
-      margin-bottom: 10px;
+      margin-bottom: 30px;
     }
     
-    .logo h1 {
+    .logo-section h1 {
       color: #667eea;
       font-size: 32px;
       font-weight: 700;
+      margin-bottom: 8px;
     }
     
-    .subtitle {
-      text-align: center;
+    .logo-section p {
       color: #999;
       font-size: 14px;
-      margin-bottom: 30px;
     }
     
     .form-group {
@@ -73,7 +77,6 @@
       border: 1px solid #ddd;
       border-radius: 8px;
       font-size: 14px;
-      font-family: inherit;
       transition: border-color 0.3s;
     }
     
@@ -81,42 +84,6 @@
       outline: none;
       border-color: #667eea;
       box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    }
-    
-    .form-group input::placeholder {
-      color: #bbb;
-    }
-    
-    .checkbox-group {
-      display: flex;
-      align-items: center;
-      margin: 20px 0;
-      gap: 10px;
-    }
-    
-    .checkbox-group input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-      cursor: pointer;
-      accent-color: #667eea;
-    }
-    
-    .checkbox-group label {
-      margin: 0;
-      font-size: 13px;
-      color: #666;
-      cursor: pointer;
-      flex: 1;
-    }
-    
-    .checkbox-group a {
-      color: #667eea;
-      text-decoration: none;
-      font-weight: 500;
-    }
-    
-    .checkbox-group a:hover {
-      text-decoration: underline;
     }
     
     .btn {
@@ -169,20 +136,21 @@
       color: #667eea;
       text-decoration: none;
       font-weight: 500;
+      cursor: pointer;
     }
     
     .footer-text a:hover {
       text-decoration: underline;
     }
     
-    .error {
+    .error-message {
       color: #e74c3c;
       font-size: 13px;
       margin-top: 5px;
       display: none;
     }
     
-    .error.show {
+    .error-message.show {
       display: block;
     }
     
@@ -240,10 +208,6 @@
       line-height: 1.8;
     }
     
-    .modal-content li {
-      margin-bottom: 8px;
-    }
-    
     .modal-buttons {
       display: flex;
       gap: 10px;
@@ -266,18 +230,9 @@
       color: #333;
     }
     
-    .modal-buttons .btn-reject:hover {
-      background: #e0e0e0;
-    }
-    
     .modal-buttons .btn-accept {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
-    }
-    
-    .modal-buttons .btn-accept:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
     }
     
     .page {
@@ -288,32 +243,31 @@
       display: block;
     }
     
-    .navbar {
+    .app-navbar {
       background: white;
       padding: 15px 20px;
-      border-radius: 12px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
-      max-width: 1200px;
-      margin-left: auto;
-      margin-right: auto;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
     
-    .navbar-logo {
+    .app-navbar-logo {
       font-size: 24px;
       font-weight: bold;
       color: #667eea;
     }
     
-    .navbar-links {
+    .app-navbar-links {
       display: flex;
       gap: 20px;
+      align-items: center;
     }
     
-    .navbar-links button {
+    .app-navbar-links button {
       background: none;
       border: none;
       cursor: pointer;
@@ -324,23 +278,29 @@
       transition: background 0.3s;
     }
     
-    .navbar-links button:hover {
+    .app-navbar-links button:hover {
       background: #f0f0f0;
     }
     
-    .navbar-links .logout-btn {
+    .app-navbar-links .logout-btn {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
     }
     
-    .navbar-links .logout-btn:hover {
+    .app-navbar-links .logout-btn:hover {
       opacity: 0.9;
     }
     
-    .home-content {
+    .app-container {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 0 20px;
+      padding: 20px;
+    }
+    
+    .two-column {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 20px;
     }
     
     .post-card {
@@ -355,6 +315,13 @@
       display: flex;
       align-items: center;
       margin-bottom: 15px;
+      justify-content: space-between;
+    }
+    
+    .post-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
     
     .avatar {
@@ -367,13 +334,21 @@
       justify-content: center;
       color: white;
       font-weight: bold;
-      margin-left: 10px;
+      font-size: 18px;
     }
     
     .post-content {
       margin-bottom: 15px;
       line-height: 1.6;
       color: #333;
+    }
+    
+    .post-image {
+      width: 100%;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      max-height: 400px;
+      object-fit: cover;
     }
     
     .post-actions {
@@ -394,34 +369,292 @@
       align-items: center;
       gap: 8px;
       transition: color 0.3s;
+      flex: 1;
+      justify-content: center;
     }
     
     .action-btn:hover {
       color: #667eea;
     }
+    
+    .action-btn.liked {
+      color: #e74c3c;
+    }
+    
+    .create-post {
+      background: white;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .create-post-input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      resize: vertical;
+      min-height: 80px;
+    }
+    
+    .create-post-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    
+    .create-post-buttons button {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .sidebar {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      height: fit-content;
+      position: sticky;
+      top: 80px;
+    }
+    
+    .sidebar h3 {
+      color: #333;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+    
+    .sidebar-item {
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    
+    .sidebar-item:hover {
+      background: #f0f0f0;
+    }
+    
+    .comments-section {
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid #eee;
+    }
+    
+    .comment {
+      margin-bottom: 10px;
+      padding: 10px;
+      background: #f9f9f9;
+      border-radius: 8px;
+      font-size: 13px;
+    }
+    
+    .comment-author {
+      font-weight: 600;
+      color: #333;
+    }
+    
+    .comment-text {
+      color: #666;
+      margin-top: 5px;
+    }
+    
+    .comment-input {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    
+    .comment-input input {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+    
+    .comment-input button {
+      padding: 8px 16px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    
+    .profile-header {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .profile-avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 48px;
+      margin: 0 auto 15px;
+    }
+    
+    .profile-stats {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+    }
+    
+    .stat {
+      text-align: center;
+    }
+    
+    .stat-number {
+      font-size: 24px;
+      font-weight: bold;
+      color: #667eea;
+    }
+    
+    .stat-label {
+      font-size: 12px;
+      color: #999;
+    }
+    
+    .messages-list {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    
+    .message-item {
+      padding: 15px;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    
+    .message-item:hover {
+      background: #f9f9f9;
+    }
+    
+    .message-item.active {
+      background: #f0f2f5;
+    }
+    
+    .chat-window {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      height: 500px;
+    }
+    
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
+    
+    .message-bubble {
+      margin-bottom: 15px;
+      display: flex;
+      gap: 10px;
+    }
+    
+    .message-bubble.sent {
+      justify-content: flex-end;
+    }
+    
+    .message-bubble-content {
+      background: #667eea;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 12px;
+      max-width: 70%;
+      word-wrap: break-word;
+    }
+    
+    .message-bubble.received .message-bubble-content {
+      background: #f0f0f0;
+      color: #333;
+    }
+    
+    .chat-input {
+      padding: 15px;
+      border-top: 1px solid #eee;
+      display: flex;
+      gap: 10px;
+    }
+    
+    .chat-input input {
+      flex: 1;
+      padding: 10px 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    
+    .chat-input button {
+      padding: 10px 20px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    
+    @media (max-width: 768px) {
+      .two-column {
+        grid-template-columns: 1fr;
+      }
+      
+      .sidebar {
+        display: none;
+      }
+    }
   </style>
 </head>
 <body>
-  <!-- Login Page -->
+  <!-- Auth Pages -->
   <div id="loginPage" class="page show">
-    <div class="container">
-      <div class="card">
-        <div class="logo">
+    <div class="auth-container">
+      <div class="auth-card">
+        <div class="logo-section">
           <h1>ASH SOCIAL</h1>
+          <p>تطبيق التواصل الاجتماعي</p>
         </div>
-        <p class="subtitle">مرحبا بعودتك</p>
         
         <form id="loginForm" onsubmit="handleLogin(event)">
           <div class="form-group">
-            <label>البريد الإلكتروني أو رقم الهاتف</label>
-            <input type="text" id="loginEmail" placeholder="your@email.com" required>
-            <div class="error" id="loginEmailError"></div>
+            <label>البريد الإلكتروني</label>
+            <input type="email" id="loginEmail" placeholder="your@email.com" required>
+            <div class="error-message" id="loginError"></div>
           </div>
           
           <div class="form-group">
             <label>كلمة المرور</label>
             <input type="password" id="loginPassword" placeholder="••••••••" required>
-            <div class="error" id="loginPasswordError"></div>
           </div>
           
           <button type="submit" class="btn btn-primary">دخول</button>
@@ -429,12 +662,8 @@
         
         <div class="divider">أو</div>
         
-        <button class="btn btn-secondary" onclick="alert('ميزة Google قريباً')">
-          <span>🔐 Google</span>
-        </button>
-        
         <div class="footer-text">
-          ليس لديك حساب؟ <a href="#" onclick="showRegister(event)">إنشاء حساب</a>
+          ليس لديك حساب؟ <a onclick="showRegister()">إنشاء حساب</a>
         </div>
       </div>
     </div>
@@ -442,12 +671,12 @@
   
   <!-- Register Page -->
   <div id="registerPage" class="page">
-    <div class="container">
-      <div class="card">
-        <div class="logo">
+    <div class="auth-container">
+      <div class="auth-card">
+        <div class="logo-section">
           <h1>ASH SOCIAL</h1>
+          <p>انضم إلى مجتمعنا</p>
         </div>
-        <p class="subtitle">انضم إلى مجتمعنا اليوم</p>
         
         <form id="registerForm" onsubmit="handleRegister(event)">
           <div class="form-group">
@@ -456,18 +685,8 @@
           </div>
           
           <div class="form-group">
-            <label>اسم المستخدم</label>
-            <input type="text" id="username" placeholder="ahmed_dev" required>
-          </div>
-          
-          <div class="form-group">
             <label>البريد الإلكتروني</label>
             <input type="email" id="registerEmail" placeholder="your@email.com" required>
-          </div>
-          
-          <div class="form-group">
-            <label>رقم الهاتف</label>
-            <input type="tel" id="phone" placeholder="+966501234567">
           </div>
           
           <div class="form-group">
@@ -484,7 +703,7 @@
         </form>
         
         <div class="footer-text">
-          هل لديك حساب بالفعل؟ <a href="#" onclick="showLogin(event)">دخول</a>
+          هل لديك حساب؟ <a onclick="showLogin()">دخول</a>
         </div>
       </div>
     </div>
@@ -494,34 +713,13 @@
   <div id="termsModal" class="modal">
     <div class="modal-content">
       <h2>شروط الاستخدام والسياسات</h2>
-      
-      <h3>1. قبول الشروط</h3>
-      <p>بالنقر على "أوافق"، فإنك توافق على جميع شروط الاستخدام والسياسات التالية.</p>
-      
-      <h3>2. حقوق الاستخدام</h3>
+      <p>بالموافقة على هذه الشروط، فإنك توافق على:</p>
       <ul>
-        <li>يمكنك استخدام التطبيق فقط للأغراض القانونية</li>
-        <li>لا يمكنك نسخ أو توزيع محتوى التطبيق بدون إذن</li>
-        <li>أنت مسؤول عن سرية كلمة المرور الخاصة بك</li>
+        <li>استخدام التطبيق للأغراض القانونية فقط</li>
+        <li>عدم نشر محتوى مسيء أو عنيف</li>
+        <li>احترام خصوصية المستخدمين الآخرين</li>
+        <li>عدم انتهاك حقوق الملكية الفكرية</li>
       </ul>
-      
-      <h3>3. المحتوى المحظور</h3>
-      <ul>
-        <li>المحتوى العنيف أو المسيء</li>
-        <li>المحتوى الجنسي أو الإباحي</li>
-        <li>المحتوى التمييزي أو الكراهية</li>
-        <li>المحتوى الذي ينتهك الملكية الفكرية</li>
-      </ul>
-      
-      <h3>4. الخصوصية</h3>
-      <p>نحن نحترم خصوصيتك ولن نشارك بيانات شخصية مع أطراف ثالثة بدون موافقتك.</p>
-      
-      <h3>5. المسؤولية</h3>
-      <p>التطبيق يُقدم "كما هو" بدون ضمانات. نحن لا نتحمل مسؤولية عن أي خسائر أو أضرار.</p>
-      
-      <h3>6. التعديلات</h3>
-      <p>نحتفظ بحق تعديل هذه الشروط في أي وقت. سيتم إخطارك بأي تغييرات مهمة.</p>
-      
       <div class="modal-buttons">
         <button class="btn-reject" onclick="rejectTerms()">رفض</button>
         <button class="btn-accept" onclick="acceptTerms()">أوافق</button>
@@ -529,167 +727,368 @@
     </div>
   </div>
   
-  <!-- Home Page -->
-  <div id="homePage" class="page">
-    <div class="navbar">
-      <div class="navbar-logo">ASH SOCIAL</div>
-      <div class="navbar-links">
-        <button onclick="showHome()">الرئيسية</button>
-        <button onclick="showMessages()">الرسائل</button>
-        <button onclick="showProfile()">الملف الشخصي</button>
+  <!-- App Pages -->
+  <div id="appPage" class="page">
+    <div class="app-navbar">
+      <div class="app-navbar-logo">ASH SOCIAL</div>
+      <div class="app-navbar-links">
+        <button onclick="showHome()">🏠 الرئيسية</button>
+        <button onclick="showMessages()">💬 الرسائل</button>
+        <button onclick="showProfile()">👤 ملفي</button>
         <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
       </div>
     </div>
     
-    <div class="home-content">
-      <div id="postsFeed">
-        <div class="post-card">
-          <div class="post-header">
-            <div class="avatar">أ</div>
-            <div>
-              <strong>أحمد محمد</strong>
-              <p style="font-size: 12px; color: #999;">الآن</p>
+    <div id="homePage" class="page show">
+      <div class="app-container">
+        <div class="two-column">
+          <div>
+            <div class="create-post">
+              <textarea id="postContent" class="create-post-input" placeholder="ما الذي يشغل بالك؟"></textarea>
+              <div class="create-post-buttons">
+                <button class="btn btn-primary" onclick="createPost()">نشر</button>
+              </div>
             </div>
+            <div id="postsFeed"></div>
           </div>
-          <div class="post-content">
-            مرحباً بك في ASH SOCIAL! 🎉 تطبيق التواصل الاجتماعي الجديد
-          </div>
-          <div class="post-actions">
-            <button class="action-btn">❤️ إعجاب (5)</button>
-            <button class="action-btn">💬 تعليق</button>
-            <button class="action-btn">📤 مشاركة</button>
+          
+          <div class="sidebar">
+            <h3>المستخدمون المقترحون</h3>
+            <div id="suggestedUsers"></div>
           </div>
         </div>
+      </div>
+    </div>
+    
+    <div id="messagesPage" class="page">
+      <div class="app-container">
+        <div style="display: grid; grid-template-columns: 300px 1fr; gap: 20px;">
+          <div class="messages-list" id="messagesList"></div>
+          <div class="chat-window">
+            <div class="chat-messages" id="chatMessages"></div>
+            <div class="chat-input">
+              <input type="text" id="messageInput" placeholder="اكتب رسالة...">
+              <button onclick="sendMessage()">إرسال</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div id="profilePage" class="page">
+      <div class="app-container">
+        <div class="profile-header">
+          <div class="profile-avatar" id="profileAvatar">أ</div>
+          <h2 id="profileName">أحمد محمد</h2>
+          <p id="profileEmail">user@example.com</p>
+          <div class="profile-stats">
+            <div class="stat">
+              <div class="stat-number" id="postsCount">0</div>
+              <div class="stat-label">منشورات</div>
+            </div>
+            <div class="stat">
+              <div class="stat-number" id="followersCount">0</div>
+              <div class="stat-label">متابعون</div>
+            </div>
+            <div class="stat">
+              <div class="stat-number" id="followingCount">0</div>
+              <div class="stat-label">يتابع</div>
+            </div>
+          </div>
+        </div>
+        <div id="userPosts"></div>
       </div>
     </div>
   </div>
 
   <script>
+    // Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCOnbAHgfn3zO4C7MylHUfRkWjqV3KA4D4",
+      authDomain: "ash-social.firebaseapp.com",
+      databaseURL: "https://ash-social-default-rtdb.firebaseio.com",
+      projectId: "ash-social",
+      storageBucket: "ash-social.firebasestorage.app",
+      messagingSenderId: "379309356643",
+      appId: "1:379309356643:web:b11382a1c148f8f0216a56",
+      measurementId: "G-9KSZB6MZNB"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+    const storage = firebase.storage();
+
     let currentUser = null;
     let termsAccepted = false;
-    
-    // Check if user is logged in
-    window.addEventListener('load', function() {
-      const user = localStorage.getItem('user');
+    let tempAuthData = null;
+    let selectedChatUser = null;
+
+    // Check authentication state
+    auth.onAuthStateChanged(user => {
       if (user) {
-        currentUser = JSON.parse(user);
-        showHome();
+        currentUser = user;
+        showApp();
+        loadUserProfile();
+        loadPosts();
+      } else {
+        currentUser = null;
+        showLogin();
       }
     });
-    
-    function showLogin(e) {
-      if (e) e.preventDefault();
+
+    function showLogin() {
       document.getElementById('loginPage').classList.add('show');
       document.getElementById('registerPage').classList.remove('show');
-      document.getElementById('homePage').classList.remove('show');
-      document.body.classList.remove('home-bg');
+      document.getElementById('appPage').classList.remove('show');
+      document.body.classList.remove('app-bg');
     }
-    
-    function showRegister(e) {
-      if (e) e.preventDefault();
+
+    function showRegister() {
       document.getElementById('loginPage').classList.remove('show');
       document.getElementById('registerPage').classList.add('show');
-      document.getElementById('homePage').classList.remove('show');
-      document.body.classList.remove('home-bg');
+      document.getElementById('appPage').classList.remove('show');
+      document.body.classList.remove('app-bg');
     }
-    
-    function showHome() {
-      if (!currentUser) {
-        showLogin();
-        return;
-      }
+
+    function showApp() {
       document.getElementById('loginPage').classList.remove('show');
       document.getElementById('registerPage').classList.remove('show');
+      document.getElementById('appPage').classList.add('show');
+      document.body.classList.add('app-bg');
+    }
+
+    function showHome() {
       document.getElementById('homePage').classList.add('show');
-      document.body.classList.add('home-bg');
+      document.getElementById('messagesPage').classList.remove('show');
+      document.getElementById('profilePage').classList.remove('show');
+      loadPosts();
     }
-    
+
     function showMessages() {
-      alert('ميزة الرسائل قريباً');
+      document.getElementById('homePage').classList.remove('show');
+      document.getElementById('messagesPage').classList.add('show');
+      document.getElementById('profilePage').classList.remove('show');
+      loadMessages();
     }
-    
+
     function showProfile() {
-      alert('ملفك الشخصي: ' + currentUser.name);
+      document.getElementById('homePage').classList.remove('show');
+      document.getElementById('messagesPage').classList.remove('show');
+      document.getElementById('profilePage').classList.add('show');
+      loadUserProfile();
     }
-    
+
     function handleLogin(e) {
       e.preventDefault();
       const email = document.getElementById('loginEmail').value;
       const password = document.getElementById('loginPassword').value;
-      
-      if (!email || !password) {
-        alert('الرجاء ملء جميع الحقول');
-        return;
-      }
-      
-      // Show terms modal
-      termsAccepted = false;
-      document.getElementById('termsModal').classList.add('show');
-      
-      // Store login data temporarily
-      window.tempLoginData = { email, password };
+
+      auth.signInWithEmailAndPassword(email, password)
+        .then(result => {
+          currentUser = result.user;
+          showApp();
+        })
+        .catch(error => {
+          document.getElementById('loginError').textContent = 'البريد أو كلمة المرور غير صحيحة';
+          document.getElementById('loginError').classList.add('show');
+        });
     }
-    
+
     function handleRegister(e) {
       e.preventDefault();
       const fullName = document.getElementById('fullName').value;
-      const username = document.getElementById('username').value;
       const email = document.getElementById('registerEmail').value;
-      const phone = document.getElementById('phone').value;
       const password = document.getElementById('registerPassword').value;
       const confirmPassword = document.getElementById('confirmPassword').value;
-      
+
       if (password !== confirmPassword) {
         alert('كلمات المرور غير متطابقة');
         return;
       }
-      
-      // Show terms modal
-      termsAccepted = false;
+
+      tempAuthData = { fullName, email, password };
       document.getElementById('termsModal').classList.add('show');
-      
-      // Store register data temporarily
-      window.tempRegisterData = { fullName, username, email, phone, password };
     }
-    
+
     function acceptTerms() {
-      termsAccepted = true;
-      document.getElementById('termsModal').classList.remove('show');
-      
-      if (window.tempLoginData) {
-        const data = window.tempLoginData;
-        currentUser = {
-          email: data.email,
-          name: data.email.split('@')[0]
-        };
-        localStorage.setItem('user', JSON.stringify(currentUser));
-        window.tempLoginData = null;
-        showHome();
-      } else if (window.tempRegisterData) {
-        const data = window.tempRegisterData;
-        currentUser = {
-          name: data.fullName,
-          username: data.username,
-          email: data.email,
-          phone: data.phone
-        };
-        localStorage.setItem('user', JSON.stringify(currentUser));
-        window.tempRegisterData = null;
-        showHome();
-      }
+      if (!tempAuthData) return;
+
+      auth.createUserWithEmailAndPassword(tempAuthData.email, tempAuthData.password)
+        .then(result => {
+          currentUser = result.user;
+          db.ref('users/' + currentUser.uid).set({
+            name: tempAuthData.fullName,
+            email: tempAuthData.email,
+            createdAt: new Date().toISOString()
+          });
+          document.getElementById('termsModal').classList.remove('show');
+          showApp();
+        })
+        .catch(error => {
+          alert('خطأ في التسجيل: ' + error.message);
+        });
     }
-    
+
     function rejectTerms() {
       document.getElementById('termsModal').classList.remove('show');
-      window.tempLoginData = null;
-      window.tempRegisterData = null;
-      alert('يجب أن توافق على الشروط لاستخدام التطبيق');
+      tempAuthData = null;
     }
-    
+
     function logout() {
-      localStorage.removeItem('user');
-      currentUser = null;
-      showLogin();
+      auth.signOut().then(() => {
+        currentUser = null;
+        showLogin();
+      });
+    }
+
+    function createPost() {
+      const content = document.getElementById('postContent').value;
+      if (!content.trim()) {
+        alert('الرجاء كتابة شيء');
+        return;
+      }
+
+      const postId = db.ref('posts').push().key;
+      db.ref('posts/' + postId).set({
+        userId: currentUser.uid,
+        userName: currentUser.displayName || 'مستخدم',
+        content: content,
+        likes: 0,
+        createdAt: new Date().toISOString()
+      });
+
+      document.getElementById('postContent').value = '';
+      loadPosts();
+    }
+
+    function loadPosts() {
+      db.ref('posts').orderByChild('createdAt').limitToLast(50).on('value', snapshot => {
+        const feed = document.getElementById('postsFeed');
+        feed.innerHTML = '';
+
+        const posts = [];
+        snapshot.forEach(post => {
+          posts.unshift({
+            id: post.key,
+            ...post.val()
+          });
+        });
+
+        posts.forEach(post => {
+          const postEl = document.createElement('div');
+          postEl.className = 'post-card';
+          postEl.innerHTML = `
+            <div class="post-header">
+              <div class="post-user">
+                <div class="avatar">${post.userName.charAt(0)}</div>
+                <div>
+                  <strong>${post.userName}</strong>
+                  <p style="font-size: 12px; color: #999;">الآن</p>
+                </div>
+              </div>
+            </div>
+            <div class="post-content">${post.content}</div>
+            <div class="post-actions">
+              <button class="action-btn" onclick="likePost('${post.id}')">❤️ إعجاب (${post.likes || 0})</button>
+              <button class="action-btn" onclick="toggleComments('${post.id}')">💬 تعليق</button>
+              <button class="action-btn">📤 مشاركة</button>
+            </div>
+            <div id="comments-${post.id}" style="display:none;" class="comments-section">
+              <div id="commentsList-${post.id}"></div>
+              <div class="comment-input">
+                <input type="text" id="commentInput-${post.id}" placeholder="أضف تعليق...">
+                <button onclick="addComment('${post.id}')">إرسال</button>
+              </div>
+            </div>
+          `;
+          feed.appendChild(postEl);
+        });
+      });
+    }
+
+    function likePost(postId) {
+      db.ref('posts/' + postId).once('value', snapshot => {
+        const post = snapshot.val();
+        db.ref('posts/' + postId).update({
+          likes: (post.likes || 0) + 1
+        });
+      });
+    }
+
+    function toggleComments(postId) {
+      const el = document.getElementById('comments-' + postId);
+      el.style.display = el.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function addComment(postId) {
+      const text = document.getElementById('commentInput-' + postId).value;
+      if (!text.trim()) return;
+
+      const commentId = db.ref('comments').push().key;
+      db.ref('comments/' + commentId).set({
+        postId: postId,
+        userId: currentUser.uid,
+        userName: currentUser.displayName || 'مستخدم',
+        text: text,
+        createdAt: new Date().toISOString()
+      });
+
+      document.getElementById('commentInput-' + postId).value = '';
+      loadComments(postId);
+    }
+
+    function loadComments(postId) {
+      db.ref('comments').orderByChild('postId').equalTo(postId).on('value', snapshot => {
+        const list = document.getElementById('commentsList-' + postId);
+        list.innerHTML = '';
+
+        snapshot.forEach(comment => {
+          const commentEl = document.createElement('div');
+          commentEl.className = 'comment';
+          commentEl.innerHTML = `
+            <span class="comment-author">${comment.val().userName}</span>
+            <div class="comment-text">${comment.val().text}</div>
+          `;
+          list.appendChild(commentEl);
+        });
+      });
+    }
+
+    function loadUserProfile() {
+      if (!currentUser) return;
+
+      db.ref('users/' + currentUser.uid).once('value', snapshot => {
+        const user = snapshot.val();
+        document.getElementById('profileName').textContent = user.name;
+        document.getElementById('profileEmail').textContent = currentUser.email;
+        document.getElementById('profileAvatar').textContent = user.name.charAt(0);
+      });
+
+      db.ref('posts').orderByChild('userId').equalTo(currentUser.uid).on('value', snapshot => {
+        document.getElementById('postsCount').textContent = snapshot.numChildren();
+      });
+    }
+
+    function loadMessages() {
+      const list = document.getElementById('messagesList');
+      list.innerHTML = '<p style="padding: 20px; text-align: center; color: #999;">لا توجد رسائل حتى الآن</p>';
+    }
+
+    function sendMessage() {
+      const text = document.getElementById('messageInput').value;
+      if (!text.trim()) return;
+
+      const messageId = db.ref('messages').push().key;
+      db.ref('messages/' + messageId).set({
+        senderId: currentUser.uid,
+        senderName: currentUser.displayName || 'مستخدم',
+        text: text,
+        createdAt: new Date().toISOString()
+      });
+
+      document.getElementById('messageInput').value = '';
     }
   </script>
 </body>
