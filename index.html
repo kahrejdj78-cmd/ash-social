@@ -1,863 +1,467 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ASH SOCIAL - تطبيق التواصل الاجتماعي</title>
-  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-    }
-    
-    body.app-bg {
-      background: #f0f2f5;
-    }
-    
-    .auth-container {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 20px;
-    }
-    
-    .auth-card {
-      background: white;
-      border-radius: 16px;
-      padding: 40px 30px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-      width: 100%;
-      max-width: 400px;
-    }
-    
-    .logo-section {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    
-    .logo-section h1 {
-      color: #667eea;
-      font-size: 32px;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-    
-    .logo-section p {
-      color: #999;
-      font-size: 14px;
-    }
-    
-    .form-group {
-      margin-bottom: 15px;
-    }
-    
-    .form-group label {
-      display: block;
-      color: #333;
-      font-size: 14px;
-      font-weight: 500;
-      margin-bottom: 8px;
-    }
-    
-    .form-group input {
-      width: 100%;
-      padding: 12px 14px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      font-size: 14px;
-      transition: border-color 0.3s;
-    }
-    
-    .form-group input:focus {
-      outline: none;
-      border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    }
-    
-    .btn {
-      width: 100%;
-      padding: 12px;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s;
-      margin-top: 10px;
-    }
-    
-    .btn-primary {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-    }
-    
-    .btn-primary:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
-    }
-    
-    .btn-primary:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-    
-    .error-message {
-      color: #e74c3c;
-      font-size: 13px;
-      margin-top: 5px;
-      display: none;
-    }
-    
-    .error-message.show {
-      display: block;
-    }
-    
-    .success-message {
-      color: #27ae60;
-      font-size: 13px;
-      margin-top: 5px;
-      display: none;
-    }
-    
-    .success-message.show {
-      display: block;
-    }
-    
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 1000;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    .modal.show {
-      display: flex;
-    }
-    
-    .modal-content {
-      background: white;
-      border-radius: 16px;
-      max-width: 500px;
-      padding: 30px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-      max-height: 80vh;
-      overflow-y: auto;
-    }
-    
-    .modal-content h2 {
-      color: #333;
-      margin-bottom: 20px;
-      font-size: 20px;
-    }
-    
-    .modal-content p {
-      color: #666;
-      line-height: 1.6;
-      margin-bottom: 15px;
-      font-size: 14px;
-    }
-    
-    .modal-buttons {
-      display: flex;
-      gap: 10px;
-      margin-top: 30px;
-    }
-    
-    .modal-buttons button {
-      flex: 1;
-      padding: 12px;
-      border: none;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-    
-    .modal-buttons .btn-reject {
-      background: #f0f0f0;
-      color: #333;
-    }
-    
-    .modal-buttons .btn-accept {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-    }
-    
-    .page {
-      display: none;
-    }
-    
-    .page.show {
-      display: block;
-    }
-    
-    .app-navbar {
-      background: white;
-      padding: 15px 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-    
-    .app-navbar-logo {
-      font-size: 24px;
-      font-weight: bold;
-      color: #667eea;
-    }
-    
-    .app-navbar-links {
-      display: flex;
-      gap: 20px;
-      align-items: center;
-    }
-    
-    .app-navbar-links button {
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 14px;
-      color: #333;
-      padding: 8px 12px;
-      border-radius: 6px;
-      transition: background 0.3s;
-    }
-    
-    .app-navbar-links button:hover {
-      background: #f0f0f0;
-    }
-    
-    .app-navbar-links .logout-btn {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-    }
-    
-    .app-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-    
-    .post-card {
-      background: white;
-      padding: 20px;
-      margin-bottom: 15px;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    
-    .post-header {
-      display: flex;
-      align-items: center;
-      margin-bottom: 15px;
-      justify-content: space-between;
-    }
-    
-    .post-user {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    
-    .avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: bold;
-      font-size: 18px;
-    }
-    
-    .post-content {
-      margin-bottom: 15px;
-      line-height: 1.6;
-      color: #333;
-    }
-    
-    .post-actions {
-      display: flex;
-      justify-content: space-around;
-      border-top: 1px solid #eee;
-      padding-top: 10px;
-    }
-    
-    .action-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: #666;
-      padding: 8px 16px;
-      font-size: 14px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: color 0.3s;
-      flex: 1;
-      justify-content: center;
-    }
-    
-    .action-btn:hover {
-      color: #667eea;
-    }
-    
-    .create-post {
-      background: white;
-      padding: 20px;
-      margin-bottom: 20px;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    
-    .create-post-input {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      font-size: 14px;
-      resize: vertical;
-      min-height: 80px;
-    }
-    
-    .create-post-buttons {
-      display: flex;
-      gap: 10px;
-      margin-top: 10px;
-    }
-    
-    .create-post-buttons button {
-      flex: 1;
-      padding: 10px;
-      border: none;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-    
-    .notification {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: white;
-      padding: 16px 20px;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      z-index: 2000;
-      animation: slideIn 0.3s ease-out;
-    }
-    
-    @keyframes slideIn {
-      from {
-        transform: translateX(400px);
-        opacity: 0;
-      }
-      to {
-        transform: translateX(0);
-        opacity: 1;
-      }
-    }
-    
-    .notification.success {
-      border-left: 4px solid #27ae60;
-    }
-    
-    .notification.error {
-      border-left: 4px solid #e74c3c;
-    }
-    
-    .profile-header {
-      background: white;
-      padding: 30px;
-      border-radius: 12px;
-      text-align: center;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    
-    .profile-avatar {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: bold;
-      font-size: 48px;
-      margin: 0 auto 15px;
-    }
-    
-    .profile-stats {
-      display: flex;
-      justify-content: space-around;
-      margin-top: 20px;
-      padding-top: 20px;
-      border-top: 1px solid #eee;
-    }
-    
-    .stat {
-      text-align: center;
-    }
-    
-    .stat-number {
-      font-size: 24px;
-      font-weight: bold;
-      color: #667eea;
-    }
-    
-    .stat-label {
-      font-size: 12px;
-      color: #999;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASH SOCIAL - تطبيق التواصل الاجتماعي</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+        .container { width: 100%; max-width: 500px; background: white; border-radius: 20px; padding: 40px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); margin: 50px auto; }
+        .logo { text-align: center; margin-bottom: 30px; }
+        .logo h1 { color: #667eea; font-size: 32px; margin-bottom: 10px; }
+        .logo p { color: #999; font-size: 14px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; color: #333; font-weight: 500; font-size: 14px; }
+        input { width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 14px; }
+        input:focus { outline: none; border-color: #667eea; }
+        button { width: 100%; padding: 14px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; }
+        button:hover { transform: translateY(-2px); }
+        .divider { text-align: center; margin: 20px 0; color: #999; }
+        .toggle-link { text-align: center; margin-top: 20px; }
+        .toggle-link a { color: #667eea; text-decoration: none; cursor: pointer; font-weight: 600; }
+        .hidden { display: none; }
+        .error { color: #e74c3c; font-size: 12px; margin-top: 5px; }
+        .dashboard { display: flex; flex-direction: column; height: 100vh; background: #f5f5f5; }
+        .header { background: white; padding: 15px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { color: #667eea; font-size: 24px; }
+        .logout-btn { background: #e74c3c; padding: 8px 16px; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 12px; }
+        .main-content { flex: 1; overflow-y: auto; padding: 20px; }
+        .post { background: white; border-radius: 10px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); }
+        .post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .post-author { font-weight: 600; color: #333; }
+        .post-time { color: #999; font-size: 12px; }
+        .post-content { color: #555; margin-bottom: 10px; line-height: 1.5; }
+        .post-actions { display: flex; gap: 10px; margin-top: 10px; }
+        .post-action { background: #f0f0f0; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 12px; }
+        .post-action:hover { background: #e0e0e0; }
+        .post-action.liked { background: #e74c3c; color: white; }
+        .new-post-form { background: white; border-radius: 10px; padding: 15px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); }
+        .new-post-form textarea { width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 14px; resize: vertical; min-height: 80px; font-family: inherit; }
+        .new-post-form button { margin-top: 10px; width: 100%; }
+        .bottom-nav { background: white; border-top: 1px solid #e0e0e0; display: flex; justify-content: space-around; padding: 10px 0; }
+        .nav-item { background: none; border: none; padding: 10px 20px; cursor: pointer; color: #999; font-size: 12px; }
+        .nav-item.active { color: #667eea; font-weight: 600; }
+        .page { display: none; }
+        .page.active { display: block; }
+        .profile-card { background: white; border-radius: 10px; padding: 20px; text-align: center; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); margin-bottom: 20px; }
+        .profile-avatar { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 15px; }
+        .profile-name { font-size: 20px; font-weight: 600; color: #333; margin-bottom: 5px; }
+        .profile-email { color: #999; font-size: 14px; margin-bottom: 15px; }
+        .profile-stats { display: flex; justify-content: space-around; margin-top: 15px; padding-top: 15px; border-top: 1px solid #e0e0e0; }
+        .stat { text-align: center; }
+        .stat-number { font-size: 20px; font-weight: 600; color: #667eea; }
+        .stat-label { font-size: 12px; color: #999; }
+        .terms-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 1000; }
+        .terms-modal.show { display: flex; }
+        .terms-content { background: white; border-radius: 10px; padding: 30px; max-width: 500px; max-height: 80vh; overflow-y: auto; }
+        .terms-content h2 { margin-bottom: 20px; color: #333; }
+        .terms-content p { margin-bottom: 15px; color: #666; line-height: 1.6; font-size: 14px; }
+        .terms-buttons { display: flex; gap: 10px; margin-top: 20px; }
+        .terms-buttons button { flex: 1; padding: 10px; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; }
+        .terms-buttons .reject { background: #f0f0f0; color: #333; }
+        .terms-buttons .accept { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+    </style>
 </head>
 <body>
-  <!-- Login Page -->
-  <div id="loginPage" class="page show">
-    <div class="auth-container">
-      <div class="auth-card">
-        <div class="logo-section">
-          <h1>ASH SOCIAL</h1>
-          <p>تطبيق التواصل الاجتماعي</p>
-        </div>
-        
-        <form id="loginForm" onsubmit="handleLogin(event)">
-          <div class="form-group">
-            <label>البريد الإلكتروني</label>
-            <input type="email" id="loginEmail" placeholder="your@email.com" required>
-            <div class="error-message" id="loginError"></div>
-          </div>
-          
-          <div class="form-group">
-            <label>كلمة المرور</label>
-            <input type="password" id="loginPassword" placeholder="••••••••" required>
-          </div>
-          
-          <button type="submit" class="btn btn-primary" id="loginBtn">
-            <i class="fas fa-sign-in-alt"></i> دخول
-          </button>
-        </form>
-        
-        <div style="text-align: center; margin-top: 20px; color: #999; font-size: 13px;">
-          ليس لديك حساب؟ <a onclick="showRegister()" style="color: #667eea; cursor: pointer; font-weight: 600;">إنشاء حساب</a>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  <!-- Register Page -->
-  <div id="registerPage" class="page">
-    <div class="auth-container">
-      <div class="auth-card">
-        <div class="logo-section">
-          <h1>ASH SOCIAL</h1>
-          <p>انضم إلى مجتمعنا</p>
-        </div>
-        
-        <form id="registerForm" onsubmit="handleRegister(event)">
-          <div class="form-group">
-            <label>الاسم الكامل</label>
-            <input type="text" id="fullName" placeholder="أحمد محمد" required>
-          </div>
-          
-          <div class="form-group">
-            <label>البريد الإلكتروني</label>
-            <input type="email" id="registerEmail" placeholder="your@email.com" required>
-          </div>
-          
-          <div class="form-group">
-            <label>كلمة المرور</label>
-            <input type="password" id="registerPassword" placeholder="••••••••" required>
-          </div>
-          
-          <div class="form-group">
-            <label>تأكيد كلمة المرور</label>
-            <input type="password" id="confirmPassword" placeholder="••••••••" required>
-          </div>
-          
-          <button type="submit" class="btn btn-primary" id="registerBtn">
-            <i class="fas fa-user-plus"></i> إنشاء حساب
-          </button>
-        </form>
-        
-        <div style="text-align: center; margin-top: 20px; color: #999; font-size: 13px;">
-          هل لديك حساب؟ <a onclick="showLogin()" style="color: #667eea; cursor: pointer; font-weight: 600;">دخول</a>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  <!-- Terms Modal -->
-  <div id="termsModal" class="modal">
-    <div class="modal-content">
-      <h2><i class="fas fa-file-contract"></i> شروط الاستخدام والسياسات</h2>
-      <p>بالموافقة على هذه الشروط، فإنك توافق على:</p>
-      <ul style="margin-right: 20px; color: #666; font-size: 14px; line-height: 1.8;">
-        <li>استخدام التطبيق للأغراض القانونية فقط</li>
-        <li>عدم نشر محتوى مسيء أو عنيف</li>
-        <li>احترام خصوصية المستخدمين الآخرين</li>
-        <li>عدم انتهاك حقوق الملكية الفكرية</li>
-        <li>عدم استخدام التطبيق للتنمر أو الإساءة</li>
-      </ul>
-      <div class="modal-buttons">
-        <button class="btn-reject" onclick="rejectTerms()"><i class="fas fa-times"></i> رفض</button>
-        <button class="btn-accept" onclick="acceptTerms()"><i class="fas fa-check"></i> أوافق</button>
-      </div>
-    </div>
-  </div>
-  
-  <!-- App Page -->
-  <div id="appPage" class="page">
-    <div class="app-navbar">
-      <div class="app-navbar-logo"><i class="fas fa-share-alt"></i> ASH SOCIAL</div>
-      <div class="app-navbar-links">
-        <button onclick="showHome()" title="الرئيسية"><i class="fas fa-home"></i> الرئيسية</button>
-        <button onclick="showProfile()" title="ملفي"><i class="fas fa-user"></i> ملفي</button>
-        <button class="logout-btn" onclick="logout()" title="تسجيل الخروج"><i class="fas fa-sign-out-alt"></i> خروج</button>
-      </div>
-    </div>
-    
-    <!-- Home Page -->
-    <div id="homePage" class="page show">
-      <div class="app-container">
-        <div class="create-post">
-          <textarea id="postContent" class="create-post-input" placeholder="ما الذي يشغل بالك؟"></textarea>
-          <div class="create-post-buttons">
-            <button class="btn btn-primary" onclick="createPost()"><i class="fas fa-paper-plane"></i> نشر</button>
-          </div>
-        </div>
-        <div id="postsFeed"></div>
-      </div>
-    </div>
-    
-    <!-- Profile Page -->
-    <div id="profilePage" class="page">
-      <div class="app-container">
-        <div class="profile-header">
-          <div class="profile-avatar" id="profileAvatar">أ</div>
-          <h2 id="profileName">أحمد محمد</h2>
-          <p id="profileEmail">user@example.com</p>
-          <div class="profile-stats">
-            <div class="stat">
-              <div class="stat-number" id="postsCount">0</div>
-              <div class="stat-label">منشورات</div>
-            </div>
-            <div class="stat">
-              <div class="stat-number" id="followersCount">0</div>
-              <div class="stat-label">متابعون</div>
-            </div>
-          </div>
-        </div>
-        <div id="userPosts"></div>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    // Firebase Configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyCOnbAHgfn3zO4C7MylHUfRkWjqV3KA4D4",
-      authDomain: "ash-social.firebaseapp.com",
-      databaseURL: "https://ash-social-default-rtdb.firebaseio.com",
-      projectId: "ash-social",
-      storageBucket: "ash-social.firebasestorage.app",
-      messagingSenderId: "379309356643",
-      appId: "1:379309356643:web:b11382a1c148f8f0216a56",
-      measurementId: "G-9KSZB6MZNB"
-    };
-
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.database();
-
-    let currentUser = null;
-    let tempAuthData = null;
-
-    // Check authentication state
-    auth.onAuthStateChanged(user => {
-      console.log("Auth state changed:", user);
-      if (user) {
-        currentUser = user;
-        showApp();
-        loadUserProfile();
-        loadPosts();
-      } else {
-        currentUser = null;
-        showLogin();
-      }
-    });
-
-    function showNotification(message, type = 'success') {
-      const notif = document.createElement('div');
-      notif.className = `notification ${type}`;
-      notif.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
-      document.body.appendChild(notif);
-      setTimeout(() => notif.remove(), 3000);
-    }
-
-    function showLogin() {
-      document.getElementById('loginPage').classList.add('show');
-      document.getElementById('registerPage').classList.remove('show');
-      document.getElementById('appPage').classList.remove('show');
-      document.body.classList.remove('app-bg');
-    }
-
-    function showRegister() {
-      document.getElementById('loginPage').classList.remove('show');
-      document.getElementById('registerPage').classList.add('show');
-      document.getElementById('appPage').classList.remove('show');
-      document.body.classList.remove('app-bg');
-    }
-
-    function showApp() {
-      document.getElementById('loginPage').classList.remove('show');
-      document.getElementById('registerPage').classList.remove('show');
-      document.getElementById('appPage').classList.add('show');
-      document.body.classList.add('app-bg');
-    }
-
-    function showHome() {
-      document.getElementById('homePage').classList.add('show');
-      document.getElementById('profilePage').classList.remove('show');
-      loadPosts();
-    }
-
-    function showProfile() {
-      document.getElementById('homePage').classList.remove('show');
-      document.getElementById('profilePage').classList.add('show');
-      loadUserProfile();
-    }
-
-    function handleLogin(e) {
-      e.preventDefault();
-      const email = document.getElementById('loginEmail').value;
-      const password = document.getElementById('loginPassword').value;
-      const loginBtn = document.getElementById('loginBtn');
-      const errorEl = document.getElementById('loginError');
-
-      loginBtn.disabled = true;
-      errorEl.classList.remove('show');
-
-      auth.signInWithEmailAndPassword(email, password)
-        .then(result => {
-          currentUser = result.user;
-          showNotification('تم تسجيل الدخول بنجاح!', 'success');
-          showApp();
-          document.getElementById('loginForm').reset();
-        })
-        .catch(error => {
-          console.error("Login error:", error);
-          let errorMsg = 'خطأ في تسجيل الدخول';
-          if (error.code === 'auth/user-not-found') {
-            errorMsg = 'البريد الإلكتروني غير مسجل';
-          } else if (error.code === 'auth/wrong-password') {
-            errorMsg = 'كلمة المرور غير صحيحة';
-          } else if (error.code === 'auth/invalid-email') {
-            errorMsg = 'البريد الإلكتروني غير صحيح';
-          }
-          errorEl.textContent = errorMsg;
-          errorEl.classList.add('show');
-          showNotification(errorMsg, 'error');
-        })
-        .finally(() => {
-          loginBtn.disabled = false;
-        });
-    }
-
-    function handleRegister(e) {
-      e.preventDefault();
-      const fullName = document.getElementById('fullName').value;
-      const email = document.getElementById('registerEmail').value;
-      const password = document.getElementById('registerPassword').value;
-      const confirmPassword = document.getElementById('confirmPassword').value;
-
-      if (password !== confirmPassword) {
-        showNotification('كلمات المرور غير متطابقة', 'error');
-        return;
-      }
-
-      if (password.length < 6) {
-        showNotification('كلمة المرور يجب أن تكون 6 أحرف على الأقل', 'error');
-        return;
-      }
-
-      tempAuthData = { fullName, email, password };
-      document.getElementById('termsModal').classList.add('show');
-    }
-
-    function acceptTerms() {
-      if (!tempAuthData) return;
-
-      const registerBtn = document.getElementById('registerBtn');
-      registerBtn.disabled = true;
-
-      auth.createUserWithEmailAndPassword(tempAuthData.email, tempAuthData.password)
-        .then(result => {
-          currentUser = result.user;
-          db.ref('users/' + currentUser.uid).set({
-            name: tempAuthData.fullName,
-            email: tempAuthData.email,
-            createdAt: new Date().toISOString()
-          });
-          document.getElementById('termsModal').classList.remove('show');
-          showNotification('تم إنشاء الحساب بنجاح!', 'success');
-          showApp();
-          document.getElementById('registerForm').reset();
-        })
-        .catch(error => {
-          console.error("Registration error:", error);
-          let errorMsg = 'خطأ في التسجيل';
-          if (error.code === 'auth/email-already-in-use') {
-            errorMsg = 'البريد الإلكتروني مسجل بالفعل';
-          } else if (error.code === 'auth/weak-password') {
-            errorMsg = 'كلمة المرور ضعيفة جداً';
-          }
-          showNotification(errorMsg, 'error');
-        })
-        .finally(() => {
-          registerBtn.disabled = false;
-        });
-    }
-
-    function rejectTerms() {
-      document.getElementById('termsModal').classList.remove('show');
-      tempAuthData = null;
-    }
-
-    function logout() {
-      auth.signOut().then(() => {
-        currentUser = null;
-        showNotification('تم تسجيل الخروج', 'success');
-        showLogin();
-      });
-    }
-
-    function createPost() {
-      const content = document.getElementById('postContent').value;
-      if (!content.trim()) {
-        showNotification('الرجاء كتابة شيء', 'error');
-        return;
-      }
-
-      const postId = db.ref('posts').push().key;
-      db.ref('posts/' + postId).set({
-        userId: currentUser.uid,
-        userName: currentUser.email.split('@')[0],
-        content: content,
-        likes: 0,
-        createdAt: new Date().toISOString()
-      }).then(() => {
-        document.getElementById('postContent').value = '';
-        showNotification('تم نشر المنشور بنجاح!', 'success');
-        loadPosts();
-      }).catch(error => {
-        console.error("Post error:", error);
-        showNotification('خطأ في نشر المنشور', 'error');
-      });
-    }
-
-    function loadPosts() {
-      db.ref('posts').orderByChild('createdAt').limitToLast(50).on('value', snapshot => {
-        const feed = document.getElementById('postsFeed');
-        feed.innerHTML = '';
-
-        const posts = [];
-        snapshot.forEach(post => {
-          posts.unshift({
-            id: post.key,
-            ...post.val()
-          });
-        });
-
-        if (posts.length === 0) {
-          feed.innerHTML = '<p style="text-align: center; color: #999; padding: 40px;">لا توجد منشورات حتى الآن</p>';
-          return;
-        }
-
-        posts.forEach(post => {
-          const postEl = document.createElement('div');
-          postEl.className = 'post-card';
-          postEl.innerHTML = `
-            <div class="post-header">
-              <div class="post-user">
-                <div class="avatar">${post.userName.charAt(0).toUpperCase()}</div>
-                <div>
-                  <strong>${post.userName}</strong>
-                  <p style="font-size: 12px; color: #999;">الآن</p>
+    <!-- Login/Register Form -->
+    <div id="authContainer">
+        <!-- Login Form -->
+        <div id="loginForm">
+            <div class="container">
+                <div class="logo">
+                    <h1>ASH SOCIAL</h1>
+                    <p>تطبيق التواصل الاجتماعي</p>
                 </div>
-              </div>
+                <div class="form-group">
+                    <label for="loginEmail">البريد الإلكتروني</label>
+                    <input type="email" id="loginEmail" placeholder="your@email.com">
+                    <div id="loginEmailError" class="error"></div>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">كلمة المرور</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••">
+                    <div id="loginPasswordError" class="error"></div>
+                </div>
+                <button onclick="handleLogin()">دخول</button>
+                <div class="divider">أو</div>
+                <div class="toggle-link">ليس لديك حساب؟ <a onclick="toggleForms()">إنشاء حساب</a></div>
             </div>
-            <div class="post-content">${post.content}</div>
-            <div class="post-actions">
-              <button class="action-btn" onclick="likePost('${post.id}')"><i class="fas fa-heart"></i> إعجاب (${post.likes || 0})</button>
-              <button class="action-btn"><i class="fas fa-comment"></i> تعليق</button>
-              <button class="action-btn"><i class="fas fa-share"></i> مشاركة</button>
+        </div>
+
+        <!-- Register Form -->
+        <div id="registerForm" class="hidden">
+            <div class="container">
+                <div class="logo">
+                    <h1>ASH SOCIAL</h1>
+                    <p>انضم إلى مجتمعنا</p>
+                </div>
+                <div class="form-group">
+                    <label for="fullName">الاسم الكامل</label>
+                    <input type="text" id="fullName" placeholder="أحمد محمد">
+                    <div id="fullNameError" class="error"></div>
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail">البريد الإلكتروني</label>
+                    <input type="email" id="registerEmail" placeholder="your@email.com">
+                    <div id="registerEmailError" class="error"></div>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">كلمة المرور</label>
+                    <input type="password" id="registerPassword" placeholder="••••••••">
+                    <div id="registerPasswordError" class="error"></div>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">تأكيد كلمة المرور</label>
+                    <input type="password" id="confirmPassword" placeholder="••••••••">
+                    <div id="confirmPasswordError" class="error"></div>
+                </div>
+                <button onclick="handleRegister()">إنشاء حساب</button>
+                <div class="toggle-link">هل لديك حساب؟ <a onclick="toggleForms()">دخول</a></div>
             </div>
-          `;
-          feed.appendChild(postEl);
-        });
-      }, error => {
-        console.error("Load posts error:", error);
-      });
-    }
+        </div>
+    </div>
 
-    function likePost(postId) {
-      db.ref('posts/' + postId).once('value', snapshot => {
-        const post = snapshot.val();
-        db.ref('posts/' + postId).update({
-          likes: (post.likes || 0) + 1
-        }).then(() => {
-          showNotification('تم الإعجاب بالمنشور!', 'success');
-          loadPosts();
-        });
-      });
-    }
+    <!-- Terms Modal -->
+    <div id="termsModal" class="terms-modal">
+        <div class="terms-content">
+            <h2>شروط وسياسات الاستخدام</h2>
+            <p>نرحب بك في ASH SOCIAL. قبل المتابعة، يرجى قراءة وقبول شروط الاستخدام التالية:</p>
+            <p><strong>1. المسؤولية:</strong> أنت مسؤول عن جميع الأنشطة التي تحدث في حسابك.</p>
+            <p><strong>2. المحتوى:</strong> لا تنشر محتوى غير لائق أو مسيء أو غير قانوني.</p>
+            <p><strong>3. الخصوصية:</strong> نحترم خصوصيتك وسنحافظ على بيانات حسابك.</p>
+            <p><strong>4. الاستخدام:</strong> استخدم التطبيق بطريقة مسؤولة وأخلاقية.</p>
+            <p><strong>5. الحقوق:</strong> جميع حقوق الملكية الفكرية محفوظة.</p>
+            <div class="terms-buttons">
+                <button class="reject" onclick="rejectTerms()">رفض</button>
+                <button class="accept" onclick="acceptTerms()">أوافق</button>
+            </div>
+        </div>
+    </div>
 
-    function loadUserProfile() {
-      if (!currentUser) return;
+    <!-- Dashboard -->
+    <div id="dashboard" class="dashboard hidden">
+        <div class="header">
+            <h1>ASH SOCIAL</h1>
+            <button class="logout-btn" onclick="handleLogout()">تسجيل الخروج</button>
+        </div>
+        <div class="main-content">
+            <!-- Home Page -->
+            <div id="homePage" class="page active">
+                <div class="new-post-form">
+                    <textarea id="postContent" placeholder="ما الذي يفكر فيه؟"></textarea>
+                    <button onclick="createPost()">نشر</button>
+                </div>
+                <div id="postsContainer"></div>
+            </div>
+            <!-- Profile Page -->
+            <div id="profilePage" class="page">
+                <div class="profile-card">
+                    <div class="profile-avatar">👤</div>
+                    <div class="profile-name" id="profileName">اسم المستخدم</div>
+                    <div class="profile-email" id="profileEmail">email@example.com</div>
+                    <div class="profile-stats">
+                        <div class="stat">
+                            <div class="stat-number" id="postsCount">0</div>
+                            <div class="stat-label">منشورات</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number" id="likesCount">0</div>
+                            <div class="stat-label">إعجابات</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number" id="followersCount">0</div>
+                            <div class="stat-label">متابعون</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="bottom-nav">
+            <button class="nav-item active" onclick="switchPage('home')">🏠 الرئيسية</button>
+            <button class="nav-item" onclick="switchPage('profile')">👤 الملف</button>
+        </div>
+    </div>
 
-      db.ref('users/' + currentUser.uid).once('value', snapshot => {
-        const user = snapshot.val();
-        if (user) {
-          document.getElementById('profileName').textContent = user.name;
-          document.getElementById('profileEmail').textContent = currentUser.email;
-          document.getElementById('profileAvatar').textContent = user.name.charAt(0).toUpperCase();
+    <script>
+        let currentUser = null;
+        let posts = [];
+        let users = {};
+        let termsAccepted = false;
+
+        function loadData() {
+            const savedUsers = localStorage.getItem('ashSocialUsers');
+            const savedPosts = localStorage.getItem('ashSocialPosts');
+            users = savedUsers ? JSON.parse(savedUsers) : {};
+            posts = savedPosts ? JSON.parse(savedPosts) : [];
         }
-      });
 
-      db.ref('posts').orderByChild('userId').equalTo(currentUser.uid).once('value', snapshot => {
-        document.getElementById('postsCount').textContent = snapshot.numChildren();
-      });
-    }
-  </script>
+        function saveData() {
+            localStorage.setItem('ashSocialUsers', JSON.stringify(users));
+            localStorage.setItem('ashSocialPosts', JSON.stringify(posts));
+        }
+
+        function checkAuth() {
+            const savedUser = localStorage.getItem('ashSocialCurrentUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                showDashboard();
+            }
+        }
+
+        function toggleForms() {
+            document.getElementById('loginForm').classList.toggle('hidden');
+            document.getElementById('registerForm').classList.toggle('hidden');
+            clearErrors();
+        }
+
+        function clearErrors() {
+            document.querySelectorAll('.error').forEach(el => el.textContent = '');
+        }
+
+        function handleLogin() {
+            clearErrors();
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+            let hasError = false;
+
+            if (!email) {
+                document.getElementById('loginEmailError').textContent = 'البريد الإلكتروني مطلوب';
+                hasError = true;
+            }
+            if (!password) {
+                document.getElementById('loginPasswordError').textContent = 'كلمة المرور مطلوبة';
+                hasError = true;
+            }
+            if (hasError) return;
+
+            if (!users[email]) {
+                document.getElementById('loginEmailError').textContent = 'البريد الإلكتروني غير موجود';
+                return;
+            }
+
+            if (users[email].password !== password) {
+                document.getElementById('loginPasswordError').textContent = 'كلمة المرور غير صحيحة';
+                return;
+            }
+
+            currentUser = users[email];
+            showTermsModal();
+        }
+
+        function handleRegister() {
+            clearErrors();
+            const fullName = document.getElementById('fullName').value.trim();
+            const email = document.getElementById('registerEmail').value.trim();
+            const password = document.getElementById('registerPassword').value.trim();
+            const confirmPassword = document.getElementById('confirmPassword').value.trim();
+            let hasError = false;
+
+            if (!fullName) {
+                document.getElementById('fullNameError').textContent = 'الاسم الكامل مطلوب';
+                hasError = true;
+            }
+            if (!email) {
+                document.getElementById('registerEmailError').textContent = 'البريد الإلكتروني مطلوب';
+                hasError = true;
+            }
+            if (!password) {
+                document.getElementById('registerPasswordError').textContent = 'كلمة المرور مطلوبة';
+                hasError = true;
+            }
+            if (password !== confirmPassword) {
+                document.getElementById('confirmPasswordError').textContent = 'كلمات المرور غير متطابقة';
+                hasError = true;
+            }
+            if (password.length < 6) {
+                document.getElementById('registerPasswordError').textContent = 'كلمة المرور يجب أن تكون 6 أحرف على الأقل';
+                hasError = true;
+            }
+            if (hasError) return;
+
+            if (users[email]) {
+                document.getElementById('registerEmailError').textContent = 'البريد الإلكتروني مستخدم بالفعل';
+                return;
+            }
+
+            const newUser = {
+                id: Date.now(),
+                fullName,
+                email,
+                password,
+                posts: 0,
+                likes: 0,
+                followers: 0,
+                createdAt: new Date().toISOString()
+            };
+
+            users[email] = newUser;
+            saveData();
+
+            document.getElementById('fullName').value = '';
+            document.getElementById('registerEmail').value = '';
+            document.getElementById('registerPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+
+            alert('تم إنشاء الحساب بنجاح! يرجى تسجيل الدخول');
+            toggleForms();
+        }
+
+        function showTermsModal() {
+            document.getElementById('termsModal').classList.add('show');
+        }
+
+        function acceptTerms() {
+            termsAccepted = true;
+            document.getElementById('termsModal').classList.remove('show');
+            localStorage.setItem('ashSocialCurrentUser', JSON.stringify(currentUser));
+            showDashboard();
+        }
+
+        function rejectTerms() {
+            currentUser = null;
+            document.getElementById('termsModal').classList.remove('show');
+            alert('يجب قبول الشروط والسياسات للمتابعة');
+        }
+
+        function showDashboard() {
+            document.getElementById('authContainer').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            loadProfileData();
+            loadPosts();
+        }
+
+        function handleLogout() {
+            if (confirm('هل تريد تسجيل الخروج؟')) {
+                currentUser = null;
+                localStorage.removeItem('ashSocialCurrentUser');
+                document.getElementById('authContainer').classList.remove('hidden');
+                document.getElementById('dashboard').classList.add('hidden');
+                document.getElementById('loginForm').classList.remove('hidden');
+                document.getElementById('registerForm').classList.add('hidden');
+                document.getElementById('loginEmail').value = '';
+                document.getElementById('loginPassword').value = '';
+                clearErrors();
+            }
+        }
+
+        function switchPage(page) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+
+            if (page === 'home') {
+                document.getElementById('homePage').classList.add('active');
+                event.target.classList.add('active');
+            } else if (page === 'profile') {
+                document.getElementById('profilePage').classList.add('active');
+                event.target.classList.add('active');
+            }
+        }
+
+        function createPost() {
+            const content = document.getElementById('postContent').value.trim();
+            if (!content) {
+                alert('يرجى كتابة شيء ما');
+                return;
+            }
+
+            const post = {
+                id: Date.now(),
+                author: currentUser.fullName,
+                authorEmail: currentUser.email,
+                content,
+                likes: 0,
+                comments: [],
+                createdAt: new Date().toISOString(),
+                liked: false
+            };
+
+            posts.unshift(post);
+            currentUser.posts = (currentUser.posts || 0) + 1;
+            users[currentUser.email] = currentUser;
+            saveData();
+
+            document.getElementById('postContent').value = '';
+            loadPosts();
+            loadProfileData();
+        }
+
+        function loadPosts() {
+            const container = document.getElementById('postsContainer');
+            container.innerHTML = '';
+
+            posts.forEach(post => {
+                const postEl = document.createElement('div');
+                postEl.className = 'post';
+                postEl.innerHTML = `
+                    <div class="post-header">
+                        <div>
+                            <div class="post-author">${post.author}</div>
+                            <div class="post-time">${new Date(post.createdAt).toLocaleString('ar-SA')}</div>
+                        </div>
+                    </div>
+                    <div class="post-content">${post.content}</div>
+                    <div class="post-actions">
+                        <button class="post-action ${post.liked ? 'liked' : ''}" onclick="likePost(${post.id})">❤️ ${post.likes}</button>
+                        <button class="post-action" onclick="commentPost(${post.id})">💬 تعليق</button>
+                        <button class="post-action" onclick="sharePost(${post.id})">📤 مشاركة</button>
+                    </div>
+                `;
+                container.appendChild(postEl);
+            });
+        }
+
+        function likePost(postId) {
+            const post = posts.find(p => p.id === postId);
+            if (post) {
+                if (post.liked) {
+                    post.likes--;
+                    post.liked = false;
+                } else {
+                    post.likes++;
+                    post.liked = true;
+                }
+                currentUser.likes = (currentUser.likes || 0) + (post.liked ? 1 : -1);
+                users[currentUser.email] = currentUser;
+                saveData();
+                loadPosts();
+                loadProfileData();
+            }
+        }
+
+        function commentPost(postId) {
+            const comment = prompt('اكتب تعليقك:');
+            if (comment) {
+                const post = posts.find(p => p.id === postId);
+                if (post) {
+                    post.comments.push({
+                        author: currentUser.fullName,
+                        text: comment,
+                        createdAt: new Date().toISOString()
+                    });
+                    saveData();
+                    alert('تم إضافة التعليق بنجاح');
+                    loadPosts();
+                }
+            }
+        }
+
+        function sharePost(postId) {
+            alert('تم مشاركة المنشور');
+        }
+
+        function loadProfileData() {
+            document.getElementById('profileName').textContent = currentUser.fullName;
+            document.getElementById('profileEmail').textContent = currentUser.email;
+            document.getElementById('postsCount').textContent = currentUser.posts || 0;
+            document.getElementById('likesCount').textContent = currentUser.likes || 0;
+            document.getElementById('followersCount').textContent = currentUser.followers || 0;
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadData();
+            checkAuth();
+        });
+    </script>
 </body>
 </html>
