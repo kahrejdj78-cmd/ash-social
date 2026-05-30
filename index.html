@@ -72,9 +72,7 @@
         .hidden { display: none !important; }
         .error { color: #e74c3c; font-size: 12px; margin-top: 5px; }
         .success { color: #27ae60; font-size: 12px; margin-top: 5px; }
-        .info { color: #3498db; font-size: 12px; margin-top: 5px; }
         
-        /* Dashboard Styles */
         .dashboard { 
             display: flex; 
             flex-direction: column; 
@@ -116,7 +114,6 @@
         .page { display: none; flex: 1; overflow-y: auto; }
         .page.active { display: flex; flex-direction: column; }
         
-        /* Post Styles */
         .post { 
             background: white; 
             border-radius: 10px; 
@@ -156,9 +153,7 @@
             min-width: 80px;
         }
         .post-action:hover { background: #e0e0e0; }
-        .post-action.liked { background: #e74c3c; color: white; }
         
-        /* New Post Form */
         .new-post-form { 
             background: white; 
             border-radius: 10px; 
@@ -183,7 +178,6 @@
         }
         .post-form-actions button { flex: 1; }
         
-        /* Bottom Navigation */
         .bottom-nav { 
             background: white; 
             border-top: 1px solid #e0e0e0; 
@@ -213,7 +207,6 @@
         }
         .nav-item i { font-size: 20px; }
         
-        /* Profile Card */
         .profile-card { 
             background: white; 
             border-radius: 10px; 
@@ -254,7 +247,6 @@
         .profile-edit-form .form-group { margin-bottom: 15px; }
         .profile-edit-form button { margin-top: 10px; }
         
-        /* Modal Styles */
         .modal { 
             position: fixed; 
             top: 0; 
@@ -305,7 +297,6 @@
             color: white;
         }
         
-        /* Loading Spinner */
         .spinner {
             border: 4px solid #f3f3f3;
             border-top: 4px solid #667eea;
@@ -320,7 +311,6 @@
             100% { transform: rotate(360deg); }
         }
         
-        /* Responsive */
         @media (max-width: 600px) {
             .container { margin: 20px auto; padding: 20px; }
             .header { padding: 10px 15px; }
@@ -429,7 +419,6 @@
                     <input type="file" id="imageUpload" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
                 </div>
                 <div id="postsContainer"></div>
-                <div id="loadingPosts" class="spinner hidden"></div>
             </div>
 
             <!-- Videos Page -->
@@ -540,37 +529,53 @@
         </div>
     </div>
 
-    <!-- Firebase Scripts -->
+    <!-- Firebase Scripts - PROPER ORDER -->
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage.js"></script>
 
     <script>
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyCOnbAHgfn3zO4C7MylHUfRkWjqV3KA4D4",
-            authDomain: "ash-social.firebaseapp.com",
-            databaseURL: "https://ash-social-default-rtdb.firebaseio.com",
-            projectId: "ash-social",
-            storageBucket: "ash-social.firebasestorage.app",
-            messagingSenderId: "379309356643",
-            appId: "1:379309356643:web:b11382a1c148f8f0216a56",
-            measurementId: "G-9KSZB6MZNB"
-        };
+        // Wait for Firebase to load
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
 
-        // Initialize Firebase with error handling
         let auth, database, storage;
-        
-        try {
-            firebase.initializeApp(firebaseConfig);
-            auth = firebase.auth();
-            database = firebase.database();
-            storage = firebase.storage();
-            console.log('✅ Firebase initialized successfully');
-        } catch (error) {
-            console.error('❌ Firebase initialization error:', error);
-            alert('خطأ في تهيئة التطبيق: ' + error.message);
+
+        function initializeApp() {
+            // Check if Firebase is loaded
+            if (typeof firebase === 'undefined') {
+                console.error('Firebase not loaded');
+                setTimeout(initializeApp, 1000);
+                return;
+            }
+
+            try {
+                // Firebase Configuration
+                const firebaseConfig = {
+                    apiKey: "AIzaSyCOnbAHgfn3zO4C7MylHUfRkWjqV3KA4D4",
+                    authDomain: "ash-social.firebaseapp.com",
+                    databaseURL: "https://ash-social-default-rtdb.firebaseio.com",
+                    projectId: "ash-social",
+                    storageBucket: "ash-social.firebasestorage.app",
+                    messagingSenderId: "379309356643",
+                    appId: "1:379309356643:web:b11382a1c148f8f0216a56",
+                    measurementId: "G-9KSZB6MZNB"
+                };
+
+                // Initialize Firebase
+                firebase.initializeApp(firebaseConfig);
+                auth = firebase.auth();
+                database = firebase.database();
+                storage = firebase.storage();
+
+                console.log('✅ Firebase initialized successfully');
+                checkAuth();
+            } catch (error) {
+                console.error('Firebase initialization error:', error);
+                alert('خطأ في تهيئة التطبيق. حاول مرة أخرى.');
+            }
         }
 
         let currentUser = null;
@@ -578,26 +583,13 @@
         let selectedVideoFile = null;
         let selectedReelFile = null;
         let selectedVoiceFile = null;
-        let termsAccepted = false;
-
-        window.addEventListener('load', function() {
-            console.log('🔄 Checking authentication...');
-            checkAuth();
-        });
 
         function checkAuth() {
-            if (!auth) {
-                console.error('❌ Auth not initialized');
-                return;
-            }
-
             auth.onAuthStateChanged(function(user) {
                 if (user) {
-                    console.log('✅ User logged in:', user.email);
                     currentUser = user;
                     showTermsModal();
                 } else {
-                    console.log('❌ No user logged in');
                     showAuthContainer();
                 }
             });
@@ -633,14 +625,12 @@
 
             auth.signInWithEmailAndPassword(email, password)
                 .then((userCredential) => {
-                    console.log('✅ Login successful');
                     document.getElementById('loginLoading').classList.add('hidden');
                     currentUser = userCredential.user;
                     showTermsModal();
                 })
                 .catch((error) => {
                     document.getElementById('loginLoading').classList.add('hidden');
-                    console.error('❌ Login error:', error.code, error.message);
                     if (error.code === 'auth/user-not-found') {
                         document.getElementById('loginEmailError').textContent = 'البريد الإلكتروني غير موجود';
                     } else if (error.code === 'auth/wrong-password') {
@@ -686,9 +676,7 @@
             auth.createUserWithEmailAndPassword(email, password)
                 .then((userCredential) => {
                     const user = userCredential.user;
-                    console.log('✅ User created:', user.uid);
                     
-                    // Save user profile data
                     database.ref('users/' + user.uid).set({
                         fullName: fullName,
                         email: email,
@@ -701,20 +689,18 @@
                         posts: 0,
                         createdAt: new Date().toISOString()
                     }).then(() => {
-                        console.log('✅ User profile saved');
                         document.getElementById('registerLoading').classList.add('hidden');
                         document.getElementById('fullName').value = '';
                         document.getElementById('registerEmail').value = '';
                         document.getElementById('registerPassword').value = '';
                         document.getElementById('confirmPassword').value = '';
 
-                        alert('تم إنشاء الحساب بنجاح! يرجى تسجيل الدخول');
+                        alert('✅ تم إنشاء الحساب بنجاح! يرجى تسجيل الدخول');
                         toggleForms();
                     });
                 })
                 .catch((error) => {
                     document.getElementById('registerLoading').classList.add('hidden');
-                    console.error('❌ Registration error:', error.code, error.message);
                     if (error.code === 'auth/email-already-in-use') {
                         document.getElementById('registerEmailError').textContent = 'البريد الإلكتروني مستخدم بالفعل';
                     } else {
@@ -728,7 +714,6 @@
         }
 
         function acceptTerms() {
-            termsAccepted = true;
             document.getElementById('termsModal').classList.remove('show');
             showDashboard();
             loadProfileData();
@@ -756,7 +741,6 @@
             if (confirm('هل تريد تسجيل الخروج؟')) {
                 auth.signOut().then(() => {
                     currentUser = null;
-                    termsAccepted = false;
                     showAuthContainer();
                     document.getElementById('loginForm').classList.remove('hidden');
                     document.getElementById('registerForm').classList.add('hidden');
@@ -804,7 +788,7 @@
         function handleImageUpload(event) {
             selectedImageFile = event.target.files[0];
             if (selectedImageFile) {
-                alert('تم اختيار الصورة: ' + selectedImageFile.name);
+                alert('✅ تم اختيار الصورة: ' + selectedImageFile.name);
             }
         }
 
@@ -815,7 +799,7 @@
         function handleVideoUpload(event) {
             selectedVideoFile = event.target.files[0];
             if (selectedVideoFile) {
-                alert('تم اختيار الفيديو: ' + selectedVideoFile.name);
+                alert('✅ تم اختيار الفيديو: ' + selectedVideoFile.name);
             }
         }
 
@@ -826,7 +810,7 @@
         function handleReelUpload(event) {
             selectedReelFile = event.target.files[0];
             if (selectedReelFile) {
-                alert('تم اختيار الريل: ' + selectedReelFile.name);
+                alert('✅ تم اختيار الريل: ' + selectedReelFile.name);
             }
         }
 
@@ -837,7 +821,7 @@
         function handleVoiceUpload(event) {
             selectedVoiceFile = event.target.files[0];
             if (selectedVoiceFile) {
-                alert('تم اختيار الرسالة الصوتية: ' + selectedVoiceFile.name);
+                alert('✅ تم اختيار الرسالة الصوتية: ' + selectedVoiceFile.name);
             }
         }
 
@@ -854,8 +838,7 @@
             const postData = {
                 id: postId,
                 authorId: currentUser.uid,
-                authorName: currentUser.displayName || currentUser.email,
-                authorEmail: currentUser.email,
+                authorName: currentUser.email,
                 content: content,
                 likes: 0,
                 comments: [],
@@ -874,7 +857,7 @@
                     selectedImageFile = null;
                     document.getElementById('imageUpload').value = '';
                     loadPosts();
-                }).catch(error => console.error('Upload error:', error));
+                }).catch(error => alert('خطأ في رفع الصورة: ' + error.message));
             } else {
                 database.ref('posts/' + postId).set(postData);
                 document.getElementById('postContent').value = '';
@@ -895,8 +878,7 @@
             const videoData = {
                 id: videoId,
                 authorId: currentUser.uid,
-                authorName: currentUser.displayName || currentUser.email,
-                authorEmail: currentUser.email,
+                authorName: currentUser.email,
                 content: content,
                 likes: 0,
                 comments: [],
@@ -915,7 +897,7 @@
                     selectedVideoFile = null;
                     document.getElementById('videoUpload').value = '';
                     loadVideos();
-                }).catch(error => console.error('Upload error:', error));
+                }).catch(error => alert('خطأ في رفع الفيديو: ' + error.message));
             } else {
                 database.ref('videos/' + videoId).set(videoData);
                 document.getElementById('videoContent').value = '';
@@ -936,8 +918,7 @@
             const reelData = {
                 id: reelId,
                 authorId: currentUser.uid,
-                authorName: currentUser.displayName || currentUser.email,
-                authorEmail: currentUser.email,
+                authorName: currentUser.email,
                 content: content,
                 likes: 0,
                 comments: [],
@@ -956,7 +937,7 @@
                     selectedReelFile = null;
                     document.getElementById('reelUpload').value = '';
                     loadReels();
-                }).catch(error => console.error('Upload error:', error));
+                }).catch(error => alert('خطأ في رفع الريل: ' + error.message));
             } else {
                 database.ref('reels/' + reelId).set(reelData);
                 document.getElementById('reelContent').value = '';
@@ -977,8 +958,7 @@
             const messageData = {
                 id: messageId,
                 senderId: currentUser.uid,
-                senderName: currentUser.displayName || currentUser.email,
-                senderEmail: currentUser.email,
+                senderName: currentUser.email,
                 content: content,
                 createdAt: new Date().toISOString(),
                 type: 'text'
@@ -996,7 +976,7 @@
                     selectedVoiceFile = null;
                     document.getElementById('voiceUpload').value = '';
                     loadMessages();
-                }).catch(error => console.error('Upload error:', error));
+                }).catch(error => alert('خطأ في رفع الرسالة: ' + error.message));
             } else {
                 database.ref('messages/' + messageId).set(messageData);
                 document.getElementById('messageInput').value = '';
@@ -1219,10 +1199,10 @@
                 height: height,
                 hobbies: hobbies
             }).then(() => {
-                alert('تم تحديث الملف الشخصي بنجاح');
+                alert('✅ تم تحديث الملف الشخصي بنجاح');
                 loadProfileData();
             }).catch((error) => {
-                alert('حدث خطأ: ' + error.message);
+                alert('❌ حدث خطأ: ' + error.message);
             });
         }
 
@@ -1246,7 +1226,7 @@
         }
 
         function sharePost(postId) {
-            alert('تم مشاركة المنشور!');
+            alert('✅ تم مشاركة المنشور!');
         }
 
         function likeVideo(videoId) {
